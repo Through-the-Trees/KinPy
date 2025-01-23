@@ -1,6 +1,6 @@
 from typing import Any
 
-from Kintone import App as Kintone_App
+from KinPy import App as Kintone_App
 
 import platform
 import sys
