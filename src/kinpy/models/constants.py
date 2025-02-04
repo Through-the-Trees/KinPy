@@ -67,3 +67,7 @@ QueryFunction = Literal[
 ]
 
 QueryFunctions: tuple[str] = QueryFunction.__args__
+
+Status = Literal['PROCESSING', 'SUCCESS', 'FAIL', 'CANCEL']
+
+Statuses: tuple[str] = Status.__args__
