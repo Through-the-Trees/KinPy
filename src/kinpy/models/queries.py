@@ -116,8 +116,8 @@ class QueryString(str):
         self.query = f"{self.value} >= '{val}'"
         return self
     
-@dataclass
-class _Query(MutableMapping):
+@dataclass(eq=False)
+class _Query:
     """Base class for query parameters.self.query = 
     
     Note:
@@ -149,7 +149,7 @@ class _Query(MutableMapping):
     def __str__(self):
         return str(dict(self))
 
-@dataclass
+@dataclass(eq=False)
 class GetApp(_Query):
     """Query parameters for the App API.
     
@@ -158,7 +158,7 @@ class GetApp(_Query):
     """
     id: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetApps(_Query):
     """Query parameters for the App Multiple API.
     
@@ -180,7 +180,7 @@ class GetApps(_Query):
     limit: Optional[int]=Unset
     offset: Optional[int]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetAppsStatus(_Query):
     """Query parameters for the App Status API.
     
@@ -189,7 +189,7 @@ class GetAppsStatus(_Query):
     """
     apps: Required[list[int | str]]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetFields(_Query):
     """Query parameters for the Field API.
     
@@ -200,7 +200,7 @@ class GetFields(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetFormLayout(_Query):
     """Query parameters for the Form Layout API.
     
@@ -209,7 +209,7 @@ class GetFormLayout(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetViews(_Query):
     """Query parameters for the Views API.
     
@@ -220,7 +220,7 @@ class GetViews(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetSettings(_Query):
     """Query parameters for the Settings API.
     
@@ -231,7 +231,7 @@ class GetSettings(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetProcessManagement(_Query):
     """Query parameters for the Process Management API.
     
@@ -242,7 +242,7 @@ class GetProcessManagement(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetCustomization(_Query):
     """Query parameters for the Customization API.
     
@@ -251,7 +251,7 @@ class GetCustomization(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetPermissions(_Query):
     """Query parameters for the Permissions API.
     
@@ -260,7 +260,7 @@ class GetPermissions(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetFieldPermissions(_Query):
     """Query parameters for the Field Permissions API.
     
@@ -269,7 +269,7 @@ class GetFieldPermissions(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetRecordPermissions(_Query):
     """Query parameters for the Record API.
     
@@ -280,7 +280,7 @@ class GetRecordPermissions(_Query):
     app: Required[int | str]=Unset
     ids: Required[list[int | str]]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetEvaluateRecordPermissions(_Query):
     """Query parameters for the Record API.
     
@@ -291,7 +291,7 @@ class GetEvaluateRecordPermissions(_Query):
     app: Required[int | str]=Unset
     ids: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetNotifications(_Query):
     """Query parameters for the Notifications API.
     
@@ -300,7 +300,7 @@ class GetNotifications(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetPerRecordNotifications(_Query):
     """Query parameters for the Notifications API.
     
@@ -311,7 +311,7 @@ class GetPerRecordNotifications(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetReminderNotifications(_Query):
     """Query parameters for the Notifications API.
     
@@ -322,7 +322,7 @@ class GetReminderNotifications(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetGraphSettings(_Query):
     """Query parameters for the Graph Settings API.
     
@@ -333,7 +333,7 @@ class GetGraphSettings(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetActionSettings(_Query):
     """Query parameters for the Action Settings API.
     
@@ -344,7 +344,7 @@ class GetActionSettings(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetForm(_Query):
     """Query parameters for the Form API.
 
@@ -356,7 +356,7 @@ class GetForm(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetAppPlugins(_Query):
     """Query parameters for the App Plugins API.
     
@@ -367,7 +367,7 @@ class GetAppPlugins(_Query):
     app: Required[int | str]=Unset
     lang: Optional[LanguageCode]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetAppAdminNotes(_Query):
     """Query parameters for the App Admin Notes API.
     
@@ -376,7 +376,7 @@ class GetAppAdminNotes(_Query):
     """
     app: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetRecord(_Query):
     """Query parameters for the Record API.
     
@@ -387,7 +387,7 @@ class GetRecord(_Query):
     app: Required[int | str]=Unset
     id: Required[int | str]=Unset
 
-@dataclass
+@dataclass(eq=False)
 class GetRecords(_Query):
     """Query parameters for the Record API.
     
