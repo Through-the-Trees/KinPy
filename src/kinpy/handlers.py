@@ -54,10 +54,31 @@ class BaseHTTPHandler_Async(Protocol):
         """Send a PATCH request"""
         ...
 
+class KintoneAuth(Auth):
+    def __init__(self, token: str):
+        self._token = token
+        self._build_auth_header(token)
+
+    @property
+    def token(self):
+        return self._token
+    
+    @token.setter
+    def token(self, new_token):
+        self._token = new_token
+        self._build_auth_header()
+        
+    def auth_flow(self, request):
+       request.headers.update(self._auth_header)
+
+    def _build_auth_header(self, token):
+        self._auth_header = {
+            "X-Cybozu-API-Token" : str(token)
+        }
 class HTTPX_Sync:
     """HTTPX Sync handler"""
     
-    def __init__(self, client: Client, auth: Auth, **opts) -> None:
+    def __init__(self, client: Client, auth: KintoneAuth, **opts) -> None:
         client.auth = auth # Auth is required
         
         # Passthrough options to the handler
@@ -85,7 +106,7 @@ class HTTPX_Sync:
 class HTTPX_Async:
     """HTTPX Async handler"""
 
-    def __init__(self, client: AsyncClient, auth: Auth, **opts) -> None:
+    def __init__(self, client: AsyncClient, auth: KintoneAuth, **opts) -> None:
         client.auth = auth # Auth is required
         
         # Passthrough options to the handler
