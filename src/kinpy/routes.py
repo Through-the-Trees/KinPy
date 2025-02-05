@@ -12,39 +12,65 @@ from .handlers import HTTPX_Async, HTTPX_Sync
 
 
 
-class Route:  
-    RequestType: TypeAlias = Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
-    
-    def __init__(self, method: RequestType, endpoint: str, handler: HTTPX_Sync) -> None:
+class Route:
+    RequestType = Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
+
+    def __init__(self, method: RequestType, endpoint: str, handler: HTTPX_Async | HTTPX_Sync):
         self.handler = handler
         self.method = method
-        self.endpoint = endpoint
-
+        self.endpoint = endpoint 
+     
     @property
     def url(self):
         return self.handler.client.base_url.join(self.endpoint)
+       
+    def __call__(self, **data): ...
     
-    def __call__(self, **data) -> Response:
-        with self.handler.endpoint_as(self.endpoint):
-            if self.method == 'GET':
-                return self.handler.get(data)
-            
-            elif self.method == 'POST':
-                return self.handler.post(data)
-            
-            elif self.method == 'PATCH':
-                return self.handler.patch(data)
-            
-            elif self.method == 'PUT':
-                return self.handler.put(data)
-            
-            elif self.method == 'DELETE':
-                return self.handler.delete(data)
-                
-        return None
-
     def __repr__(self):
         return f'<Route {self.method} {self.endpoint} for {self.handler}>'
+
+class SyncRoute(Route):
+    def __call__(self, **data) -> Response:
+        if not isinstance(self.handler, HTTPX_Sync):
+            raise AttributeError("Sync Routing requires a Sync Handler")
+        
+        if self.method == 'GET':
+            return self.handler.get(self.url, data)
+        
+        elif self.method == 'POST':
+            return self.handler.post(self.url, data)
+        
+        elif self.method == 'PATCH':
+            return self.handler.patch(self.url, data)
+        
+        elif self.method == 'PUT':
+            return self.handler.put(self.url, data)
+        
+        elif self.method == 'DELETE':
+            return self.handler.delete(self.url, data)   
+        return None
+
+class AsyncRoute(Route):
+    async def __call__(self, **data) -> Response:
+        if not isinstance(self.handler, HTTPX_Async):
+            raise AttributeError("Async Routing requires an Async Handler")
+        
+        if self.method == 'GET':
+            return await self.handler.get(self.url, data)
+        
+        elif self.method == 'POST':
+            return await self.handler.post(self.url, data)
+        
+        elif self.method == 'PATCH':
+            return await self.handler.patch(self.url, data)
+        
+        elif self.method == 'PUT':
+            return await self.handler.put(self.url, data)
+        
+        elif self.method == 'DELETE':
+            return await self.handler.delete(self.url, data)   
+        return None
+    
 
 class Routes:
     """Class for defining Kintone REST API endpoints"""
