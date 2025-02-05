@@ -4,6 +4,8 @@ from typing import (
     Literal, 
     TypeAlias,
     Optional,
+    Coroutine,
+    Any,
 )
 from functools import wraps
 from httpx import Response
@@ -51,7 +53,7 @@ class SyncRoute(Route):
         return None
 
 class AsyncRoute(Route):
-    async def __call__(self, **data) -> Response:
+    async def __call__(self, **data) -> Coroutine[Any, Any, Response]:
         if not isinstance(self.handler, HTTPX_Async):
             raise AttributeError("Async Routing requires an Async Handler")
         
