@@ -32,6 +32,28 @@ class Route:
         return f'<Route {self.method} {self.endpoint} for {self.handler}>'
 
 class SyncRoute(Route):
+    """Sync Route
+    
+    This class is used to define a synchronous route for making requests to the Kintone REST API
+    
+    Args:
+        method: The route REST method (GET, POST, PATCH, PUT, DELETE)
+        endpoint: The api endpoint minus the base url of the handler
+        handler: The handler to use for the request
+        opts: Optional parameters to pass to the Handler request method
+        
+    Returns:
+        Route: A Route object for the defined endpoint that can be called to make a request
+        
+    Example:
+        >>> route = SyncRoute('GET', '/k/v1/app.json', handler, params={'id': 1})
+        >>> route()
+        <Response [200 OK]>
+    
+    Example:
+        >>> routes = [SyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
+        >>> responses = [route() for route in routes] # Run requests synchronously
+    """
     def __call__(self) -> Response:
         if not isinstance(self.handler, HTTPX_Sync):
             raise AttributeError("Sync Routing requires a Sync Handler")
@@ -53,6 +75,28 @@ class SyncRoute(Route):
         return None
 
 class AsyncRoute(Route):
+    """Async Route
+    
+    This class is used to define an asynchronous route for making requests to the Kintone REST API
+    
+    Args:
+        method: The route REST method (GET, POST, PATCH, PUT, DELETE)
+        endpoint: The api endpoint minus the base url of the handler
+        handler: The handler to use for the request
+        opts: Optional parameters to pass to the Handler request method
+        
+    Returns:
+        Route: A Route object for the defined endpoint that can be called to make a request
+        
+    Example:
+        >>> route = AsyncRoute('GET', '/k/v1/app.json', handler, params={'id': 1})
+        >>> await route()
+        <Response [200 OK]>
+        
+    Example:
+        >>> routes = [AsyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
+        >>> responses = [await route() for route in routes] # Run requests concurrently
+    """
     async def __call__(self) -> Coroutine[Any, Any, Response]:
         if not isinstance(self.handler, HTTPX_Async):
             raise AttributeError("Async Routing requires an Async Handler")
@@ -72,8 +116,6 @@ class AsyncRoute(Route):
         elif self.method == 'DELETE':
             return await self.handler.delete(self.url, **self.opts)   
         return None
-    
-
 
 class Routes:
     """Class for defining Kintone REST API endpoints"""
@@ -85,7 +127,7 @@ class Routes:
                        required: tuple[str] = None, 
                        optional: tuple[str] = None,
                        **opts) -> Route:
-        """Wrapper that builds a Route object method from a method and endpoint
+        """Define a route using a function header and type hints
         
         Args:
             method: The route REST method (GET, POST, PATCH, PUT, DELETE)
@@ -93,6 +135,31 @@ class Routes:
             required: Required parameter keys
             optional: Optional parameter keys
             opts: Optional parameters to pass to the Handler request method
+        
+        Raises:
+            ValueError: If required parameters are not passed
+            ValueError: If invalid parameters are passed
+            TypeError: If parameters do not match type hints
+        
+        Returns:
+            Route: A Route object for the defined endpoint that can be called to make a request
+        
+        Danger:
+            This decorator allows for both positional and keyword arguments to be passed to the method. 
+            However, it is recommended to use keyword arguments for clarity, because a ValueError will be raised 
+            if a parameter is specified both positionally and as a keyword.
+            
+        Example:
+            >>> @register_route('GET', '/k/v1/app.json ', required=('id'))
+            ... def get_app(self, id: int | str) -> SyncRoute | AsyncRoute: 
+            ...    '''Get an App by ID'''
+            ...    ...
+            
+            >>> get_app_one = get_app(1)
+            >>> get_app_one
+            <Route GET /k/v1/app.json for <HTTPX_Sync https://example.com>>
+            >>> get_app_one()
+            <Response [200 OK]>
         """
         def _wrapper(route):
             @wraps(route)
@@ -101,6 +168,9 @@ class Routes:
                 # Convert positional to keyword
                 if args:
                     # Zip up the positionals with the annotation keys (dict keys are ordered)
+                    #
+                    # NOTE: This will fail if the method has no annotations, so make sure you type hint
+                    # Your method parameters
                     arg_map = dict(zip(_wrapped.__annotations__.keys(), args))
                     # Update kwargs with mapped args
                     # Raise a ValueError if a parameter is specified in both args and kwargs
@@ -134,6 +204,13 @@ class Routes:
                     if isinstance(value, QueryString):
                         value = value.encode()
                     params[param] = value
+                
+                # Validate param types against annotation hints
+                for param, value in params.items():
+                    if not isinstance(value, _wrapped.__annotations__[param]):
+                        raise TypeError(
+                            f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
+                            )
                 
                 if isinstance(self.handler, HTTPX_Sync):
                     return SyncRoute(method, endpoint, self.handler, params=params, **opts)
