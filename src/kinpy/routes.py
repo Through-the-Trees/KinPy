@@ -243,22 +243,26 @@ class Routes:
 
     @register_route('GET', '/k/v1/app.json ', required=('id'))
     def get_app(self, id: int | str) -> SyncRoute | AsyncRoute: 
-        """Get an App by ID"""
+        """Get an App by ID
+        
+        Args:
+            id: The App ID to get (required)
+        """
         ...
 
     @register_route('GET', '/k/v1/apps.json', optional=('ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'))
     def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> SyncRoute | AsyncRoute: 
-        """Get Apps by conditions
+        """Get Apps that match the specified criteria
         
         Args:
-            ids: List of App Ids to search for
-            codes: List of app codes to search for
-            name: Return all apps with this name (partial search, case-insensitive)
-            spaceIds: List of spaceIds to check for apps in
-            limit: Limit apps returned (100 max)
-            offset: Pagination offset
-            
+            ids: Sequence of App IDs to get (up to 100) (optional)
+            codes: Sequence of App codes to get (up to 100) (optional)
+            name: App name to get (partial match, case insensitive) (optional)
+            spaceIds: Sequence of Space IDs to get (up to 100) (optional)
+            limit: The number of apps to get (default: 100, max: 100) (optional)
+            offset: The offset of the apps to get (default: 0, max: 2147483647) (optional)
+        
         Note:
-            All array parameters have a size limit of 100, and only 100 apps can be returned at a time
+            All parameters are optional, but at least one must be specified for the request to be valid
         """
         ...
