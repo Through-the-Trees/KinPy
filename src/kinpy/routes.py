@@ -82,17 +82,17 @@ class Routes:
         self.handler = handler
     
     def register_route(method: Route.RequestType, endpoint: str, *,
-                       opts: dict[str, Any] = None,
                        required: tuple[str] = None, 
-                       optional: tuple[str] = None) -> Route:
+                       optional: tuple[str] = None,
+                       **opts) -> Route:
         """Wrapper that builds a Route object method from a method and endpoint
         
         Args:
             method: The route REST method (GET, POST, PATCH, PUT, DELETE)
             endpoint: The api endpoint minus the base url of the handler
-            opts: Optional parameters to pass to the Handler request method
             required: Required parameter keys
             optional: Optional parameter keys
+            opts: Optional parameters to pass to the Handler request method
         """
         def _wrapper(route):
             @wraps(route)
