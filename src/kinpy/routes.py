@@ -24,7 +24,8 @@ class Route:
     def url(self):
         return self.handler.client.base_url.join(self.endpoint)
        
-    def __call__(self): ...
+    def __call__(self) -> Response | Coroutine[Any, Any, Response]:
+        raise NotImplementedError("Route must be subclassed as SyncRoute or AsyncRoute")
     
     def __repr__(self):
         return f'<Route {self.method} {self.endpoint} for {self.handler}>'
