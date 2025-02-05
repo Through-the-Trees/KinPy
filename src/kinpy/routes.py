@@ -37,19 +37,19 @@ class SyncRoute(Route):
             raise AttributeError("Sync Routing requires a Sync Handler")
         
         if self.method == 'GET':
-            return self.handler.get(self.url, data)
+            return self.handler.get(self.url, **data)
         
         elif self.method == 'POST':
-            return self.handler.post(self.url, data)
+            return self.handler.post(self.url, **data)
         
         elif self.method == 'PATCH':
-            return self.handler.patch(self.url, data)
+            return self.handler.patch(self.url, **data)
         
         elif self.method == 'PUT':
-            return self.handler.put(self.url, data)
+            return self.handler.put(self.url, **data)
         
         elif self.method == 'DELETE':
-            return self.handler.delete(self.url, data)   
+            return self.handler.delete(self.url, **data)   
         return None
 
 class AsyncRoute(Route):
@@ -58,19 +58,19 @@ class AsyncRoute(Route):
             raise AttributeError("Async Routing requires an Async Handler")
         
         if self.method == 'GET':
-            return await self.handler.get(self.url, data)
+            return await self.handler.get(self.url, **data)
         
         elif self.method == 'POST':
-            return await self.handler.post(self.url, data)
+            return await self.handler.post(self.url, **data)
         
         elif self.method == 'PATCH':
-            return await self.handler.patch(self.url, data)
+            return await self.handler.patch(self.url, **data)
         
         elif self.method == 'PUT':
-            return await self.handler.put(self.url, data)
+            return await self.handler.put(self.url, **data)
         
         elif self.method == 'DELETE':
-            return await self.handler.delete(self.url, data)   
+            return await self.handler.delete(self.url, **data)   
         return None
     
 
