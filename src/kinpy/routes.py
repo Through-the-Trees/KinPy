@@ -2,8 +2,6 @@
 
 from typing import (
     Literal, 
-    TypeAlias,
-    Optional,
     Coroutine,
     Any,
 )
@@ -242,7 +240,7 @@ class Routes:
         return _wrapper
 
     @register_route('GET', '/k/v1/app.json ', required=('id'))
-    def get_app(self, id: int | str) -> SyncRoute | AsyncRoute: 
+    def get_app(self, id: int | str) -> Route: 
         """Get an App by ID
         
         Args:
@@ -251,7 +249,7 @@ class Routes:
         ...
 
     @register_route('GET', '/k/v1/apps.json', optional=('ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'))
-    def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> SyncRoute | AsyncRoute: 
+    def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> Route: 
         """Get Apps that match the specified criteria
         
         Args:
@@ -266,3 +264,4 @@ class Routes:
             All parameters are optional, but at least one must be specified for the request to be valid
         """
         ...
+
