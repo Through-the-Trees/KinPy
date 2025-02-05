@@ -6,7 +6,7 @@ from typing import (
     Protocol,
 )
 from functools import wraps
-from httpx import Client, AsyncClient, Response, Auth, URL
+from httpx import Client, AsyncClient, Response, Auth, URL, Headers
 
 class BaseHTTPHandler_Sync(Protocol):
     """Base class for Sync HTTP handlers"""
@@ -69,12 +69,13 @@ class KintoneAuth(Auth):
         self._build_auth_header()
         
     def auth_flow(self, request):
-       request.headers.update(self._auth_header)
+       request.headers.update(self._auth_headers)
 
     def _build_auth_header(self, token):
-        self._auth_header = {
+        self._auth_headers = Headers({
             "X-Cybozu-API-Token" : str(token)
-        }
+        })
+        
 class HTTPX_Sync:
     """HTTPX Sync handler"""
     
