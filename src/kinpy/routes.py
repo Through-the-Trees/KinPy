@@ -131,7 +131,7 @@ class Routes:
         <Response [200 OK]>
     
     Example:
-        >>> handler = HTTPX_Async('https://example.com', auth=KintoneAuth('<token
+        >>> handler = HTTPX_Async('https://example.com', auth=KintoneAuth('<token>'))
         >>> routes = Routes(handler)
         >>> app_one = routes.get_app(1)
         >>> await app_one()
