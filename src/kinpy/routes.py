@@ -45,11 +45,6 @@ class Route:
 
     def __repr__(self):
         return f'<Route {self.method} {self.endpoint} for {self.handler}>'
-    
-    def __iter__(self):
-        if not self.method == 'GET':
-            raise ValueError('Only GET routes can be iterated')
-        return iter(self()['items'])
 
 class Routes:
     """Class for defining Kintone REST API endpoints"""
