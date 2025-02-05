@@ -6,7 +6,7 @@ from typing import (
     Protocol,
 )
 from functools import wraps
-from httpx import Client, AsyncClient, Response, BasicAuth
+from httpx import Client, AsyncClient, Response, Auth, URL
 
 class BaseHTTPHandler_Sync(Protocol):
     """Base class for Sync HTTP handlers"""
@@ -30,12 +30,7 @@ class BaseHTTPHandler_Sync(Protocol):
     def patch(self, url: str, data: dict) -> ... :
         """Send a PATCH request"""
         ...
-
-    @contextmanager
-    def endpoint_as(endpoint: str):
-        """Context manager for setting the endpoint"""
-        ...
-
+        
 class BaseHTTPHandler_Async(Protocol):
     """Base class for Async HTTP handlers"""
 
@@ -58,76 +53,59 @@ class BaseHTTPHandler_Async(Protocol):
     async def patch(self, url: str, data: dict) -> ... :
         """Send a PATCH request"""
         ...
-    
-    @contextmanager
-    def endpoint_as(endpoint: str):
-        """Context manager for setting the endpoint"""
-        ...
 
 class HTTPX_Sync:
     """HTTPX Sync handler"""
-
-    def __init__(self, client: Client, auth: BasicAuth) -> None:
-        self.client = client
-        self.auth = auth
-
-    def get(self, url: str) -> Response:
-        return self.client.get(url, auth=self.auth)
-
-    def post(self, url: str, data: dict) -> Response:
-        return self.client.post(url, json=data, auth=self.auth)
-
-    def put(self, url: str, data: dict) -> Response:
-        return self.client.put(url, json=data, auth=self.auth)
-
-    def delete(self, url: str) -> Response:
-        return self.client.delete(url, auth=self.auth)
-
-    def patch(self, url: str, data: dict) -> Response:
-        return self.client.patch(url, json=data, auth=self.auth)
     
-    @contextmanager
-    def endpoint_as(self, endpoint: str):
-        """Context manager for setting the endpoint"""
-        original_endpoint = self.client.base_url
-        self.client.base_url = endpoint
-        try:
-            yield
-        finally:
-            self.client.base_url = original_endpoint
+    def __init__(self, client: Client, auth: Auth, **opts) -> None:
+        client.auth = auth # Auth is required
+        
+        # Passthrough options to the handler
+        for attr, val in opts.items():
+            if hasattr(client, attr):
+               setattr(client, attr, val)
+
+        self.client = client
+               
+    def get(self, url: URL, **data) -> Response:
+        return self.client.get(url, **data)
+
+    def post(self, url: URL, **data) -> Response:
+        return self.client.post(url, **data)
+
+    def put(self, url: URL, **data) -> Response:
+        return self.client.put(url, **data)
+
+    def delete(self, url: URL, **data) -> Response:
+        return self.client.delete(url, **data)
+
+    def patch(self, url: URL, **data) -> Response:
+        return self.client.patch(url, **data)
     
 class HTTPX_Async:
     """HTTPX Async handler"""
 
-    def __init__(self, client: AsyncClient, auth: BasicAuth) -> None:
+    def __init__(self, client: AsyncClient, auth: Auth, **opts) -> None:
+        client.auth = auth # Auth is required
+        
+        # Passthrough options to the handler
+        for attr, val in opts.items():
+            if hasattr(client, attr):
+               setattr(client, attr, val) 
+        
         self.client = client
-        self.auth = auth
 
-    @property
-    def endpoint(self):
-        return self.client.base_url
+    async def get(self, url: URL, **data) -> Response:
+        return await self.client.get(url, **data)
 
-    async def get(self, url: str) -> Response:
-        return await self.client.get(str(self.endpoint), auth=self.auth)
+    async def post(self, url: URL, **data) -> Response:
+        return await self.client.post(url, **data)
 
-    async def post(self, url: str, data: dict) -> Response:
-        return await self.client.post(str(self.endpoint), json=data, auth=self.auth)
+    async def put(self, url: URL, **data) -> Response:
+        return await self.client.put(url, **data)
 
-    async def put(self, url: str, data: dict) -> Response:
-        return await self.client.put(str(self.endpoint), json=data, auth=self.auth)
+    async def delete(self, url: URL, **data) -> Response:
+        return await self.client.delete(url, **data)
 
-    async def delete(self, url: str) -> Response:
-        return await self.client.delete(str(self.endpoint), auth=self.auth)
-
-    async def patch(self, url: str, data: dict) -> Response:
-        return await self.client.patch(str(self.endpoint), json=data, auth=self.auth)
-    
-    @contextmanager
-    def endpoint_as(self, endpoint: str):
-        """Context manager for setting the endpoint"""
-        original_endpoint = self.client.base_url
-        self.client.base_url = endpoint
-        try:
-            yield
-        finally:
-            self.client.base_url = original_endpoint
+    async def patch(self, url: URL, data) -> Response:
+        return await self.client.patch(url, **data)
