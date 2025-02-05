@@ -8,52 +8,6 @@ from typing import (
 from functools import wraps
 from httpx import Client, AsyncClient, Response, Auth, URL, Headers
 
-class BaseHTTPHandler_Sync(Protocol):
-    """Base class for Sync HTTP handlers"""
-
-    def get(self, url: str) -> ... :
-        """Send a GET request"""
-        ...
-
-    def post(self, url: str, data: dict) -> ... :
-        """Send a POST request"""
-        ...
-
-    def put(self, url: str, data: dict) -> ... :
-        """Send a PUT request"""
-        ...
-
-    def delete(self, url: str) -> ... :
-        """Send a DELETE request"""
-        ...
-
-    def patch(self, url: str, data: dict) -> ... :
-        """Send a PATCH request"""
-        ...
-        
-class BaseHTTPHandler_Async(Protocol):
-    """Base class for Async HTTP handlers"""
-
-    async def get(self, url: str) -> ... :
-        """Send awaitable GET request"""
-        ...
-
-    async def post(self, url: str, data: dict) -> ... :
-        """Send a POST request"""
-        ...
-
-    async def put(self, url: str, data: dict) -> ... :
-        """Send a PUT request"""
-        ...
-
-    async def delete(self, url: str) -> ... :
-        """Send a DELETE request"""
-        ...
-
-    async def patch(self, url: str, data: dict) -> ... :
-        """Send a PATCH request"""
-        ...
-
 class KintoneAuth(Auth):
     def __init__(self, token: str):
         self._token = token
