@@ -118,7 +118,25 @@ class AsyncRoute(Route):
         return None
 
 class Routes:
-    """Class for defining Kintone REST API endpoints"""
+    """Class for defining Kintone REST API endpoints
+    
+    Args:
+        handler: The handler to use for the request
+        
+    Example:
+        >>> handler = HTTPX_Sync('https://example.com', auth=KintoneAuth('<token>'))
+        >>> routes = Routes(handler)
+        >>> app_one = routes.get_app(1)
+        >>> app_one()
+        <Response [200 OK]>
+    
+    Example:
+        >>> handler = HTTPX_Async('https://example.com', auth=KintoneAuth('<token
+        >>> routes = Routes(handler)
+        >>> app_one = routes.get_app(1)
+        >>> await app_one()
+        <Response [200 OK]>
+    """
 
     def __init__(self, handler: HTTPX_Async | HTTPX_Sync) -> None:
         self.handler = handler
