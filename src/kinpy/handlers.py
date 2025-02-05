@@ -59,6 +59,9 @@ class HTTPX_Sync:
     def patch(self, url: URL, **data) -> Response:
         return self.client.patch(url, **data)
     
+    def __repr__(self):
+        return f'<HTTPX_Sync {self.client.base_url}>'
+    
 class HTTPX_Async:
     """HTTPX Async handler"""
 
@@ -86,3 +89,6 @@ class HTTPX_Async:
 
     async def patch(self, url: URL, **data) -> Response:
         return await self.client.patch(url, **data)
+
+    def __repr__(self):
+            return f'<HTTPX_Async {self.client.base_url}>'
