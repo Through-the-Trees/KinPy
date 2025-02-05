@@ -130,5 +130,5 @@ class HTTPX_Async:
     async def delete(self, url: URL, **data) -> Response:
         return await self.client.delete(url, **data)
 
-    async def patch(self, url: URL, data) -> Response:
+    async def patch(self, url: URL, **data) -> Response:
         return await self.client.patch(url, **data)
