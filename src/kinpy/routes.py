@@ -96,7 +96,18 @@ class Routes:
         """
         def _wrapper(route):
             @wraps(route)
-            def _wrapped(self, **kwargs):
+            def _wrapped(self, *args, **kwargs):
+                
+                # Convert positional to keyword
+                if args:
+                    # Zip up the positionals with the annotation keys (dict keys are ordered)
+                    arg_map = dict(zip(_wrapped.__annotations__.keys(), args))
+                    # Update kwargs with mapped args
+                    # Raise a ValueError if a parameter is specified in both args and kwargs
+                    for k, v in arg_map:
+                        if k in kwargs:
+                            raise ValueError(f"{k} is specified both positionally and as a keyword")
+                        kwargs[k] = v
                 
                 # Build param sets
                 kwarg_set = set(kwargs.keys())
