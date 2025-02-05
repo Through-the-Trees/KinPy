@@ -70,6 +70,7 @@ class KintoneAuth(Auth):
         
     def auth_flow(self, request):
        request.headers.update(self._auth_headers)
+       yield request
 
     def _build_auth_header(self, token):
         self._auth_headers = Headers({
