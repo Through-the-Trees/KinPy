@@ -1,11 +1,6 @@
 """Module for creating HTTP handlers to be used with the rest of the package"""
 from __future__ import annotations
 
-from contextlib import contextmanager
-from typing import (
-    Protocol,
-)
-from functools import wraps
 from httpx import Client, AsyncClient, Response, Auth, URL, Headers
 
 class KintoneAuth(Auth):
