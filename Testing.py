@@ -35,7 +35,7 @@ sys.exit()
 import tkinter as tk
 from tkinter import messagebox
 
-from Kintone import App as Kintone_App
+from KinPy import App as Kintone_App
 
 # Function to show the popup
 def show_popup(text: str=""):
