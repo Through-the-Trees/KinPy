@@ -1,10 +1,9 @@
 from typing import Any
 
-from Kintone import App as Kintone_App
+from KinPy import App as Kintone_App
+from key import DEVICE_APP_KEY
 
-import platform
 import sys
-
 import subprocess
 
 import tkinter as tk
@@ -13,27 +12,16 @@ from tkinter import messagebox
 
 devices_app = Kintone_App(
     'https://throughthetrees.kintone.com/k/v1/',
-    api_token='',
+    api_token=DEVICE_APP_KEY,
     app_id=4
 )
 
-# Detect windows version
-if sys.platform == "win32":
-    release = platform.release()
-    if release == '10':
-        command = "wmic bios get serialnumber"
-    elif release == '11':
-        command = 'powershell -NoProfile -ExecutionPolicy Bypass -Command "& { Get-CimInstance -ClassName Win32_BIOS | Select-Object SerialNumber }"'
-    else:
-        sys.exit()
-else:
-    sys.exit()
+serial_command = 'powershell -NoProfile -ExecutionPolicy Bypass -Command "& { Get-CimInstance -ClassName Win32_BIOS | Select-Object SerialNumber }"'
 
-# Run system command to get serial number
-result = subprocess.run(command, capture_output=True, text=True, shell=True)
+# Run powershell command to get serial number
+result = subprocess.run(serial_command, capture_output=True, text=True, shell=True)
 
 # Get last "word" from the command output
-messagebox.showinfo("Info", f"Comand output: {result}")
 serial_number = result.stdout.strip().split()[-1]
 
 print("Serial Number:", serial_number)

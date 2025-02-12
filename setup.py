@@ -1,6 +1,5 @@
 from cx_Freeze import setup, Executable
 from cx_Freeze import hooks
-import urllib3
 
 # Ensure urllib3 submodules are included
 # hooks.Module.load_hook("urllib3")
