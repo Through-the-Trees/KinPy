@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from contextlib import contextmanager
 from typing import (
     Optional,
-
+    Literal,
 )
 
 from .fields import Field
@@ -12,7 +12,7 @@ from .fields import Field
 # Main datamodels for KinPy
 # Interfaces inherit the attributes defined here and implement methods for the API
 
-# Sentinal to allow passing None/null values to the API to delete data using PATCH
+# Sentinel to allow passing None/null values to the API to delete data using PATCH
 
 Unset = object()
 
@@ -143,24 +143,67 @@ class User(Model):
 
 @dataclass(eq=False)
 class Group(Model):
-    pass
+    id: str = Unset
+    code: str = Unset
+    name:str = Unset
+    description: str = Unset
 
 @dataclass(eq=False)
 class View(Model):
-    pass
+    type: Literal['LIST', 'CALENDAR', 'CUSTOM'] = Unset
+    name: str = Unset
+    id: str = Unset
+    filterCond: str = Unset# A Query String
+    sort: str = Unset # <FILED> asc/desc
+    index: str = Unset
+    fields: list[str] = Unset
+
+@dataclass(eq=False)
+class SpacePermissions(Model):
+    createApp: Literal['EVERYONE', 'ADMIN'] = Unset
 
 @dataclass(eq=False)
 class Space(Model):
-    pass
+    id: str = Unset
+    name: str = Unset
+    defaultThread: str = Unset
+    isPrivate: bool = Unset
+    creator: UserId = Unset
+    modifier: UserId = Unset
+    memberCount: int = Unset
+    coverType: Literal['BLOB', 'PRESET'] = Unset
+    coverKey: str = Unset
+    coverUrl: str = Unset
+    body: str = Unset # HTML
+    useMultiThread: bool = Unset
+    isGuest: bool = Unset
+    attachedApps: list[App] = Unset
+    fixedMember: bool = Unset
+    showAnnouncement: bool = Unset
+    showThreadList: bool = Unset
+    showAppList: bool = Unset
+    showMemberList: bool = Unset
+    showRelatedLinkList: bool = Unset
+    permissions: SpacePermissions
+
+@dataclass(eq=False)
+class Thread(Model):
+    id: str = Unset
+    name: str = Unset
+    body: str = Unset # HTML
 
 @dataclass(eq=False)
 class Form(Model):
-    pass
+    properties: list[Field]
 
 @dataclass(eq=False)
 class Layout(Model):
-    pass
+    type: str
+    code: str
+    fields: list[Field]
 
+# API Info
 @dataclass(eq=False)
-class Row(Model):
-    pass
+class Info(Model):
+    baseUrl: str
+    apis: dict # JSON

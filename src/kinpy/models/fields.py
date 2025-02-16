@@ -11,6 +11,7 @@ Unset = object()
 
 FieldType = Literal[
         'CALC',
+        'CATEGORY',
         'CHECK_BOX',
         'CREATED_TIME',
         'CREATOR',
@@ -33,7 +34,7 @@ FieldType = Literal[
         'SPACER',
         'STATUS',
         'STATUS_ASSIGNEE',
-        'SUBTABLE'
+        'SUBTABLE',
         'TIME',
         'UPDATED_TIME',
         'USER_SELECT',
@@ -41,197 +42,284 @@ FieldType = Literal[
         'GROUP_SELECT',
         '__ID__',
         '__REVISION__',
+        'GROUP',
+        'HR',
         '_LOOKUP',    # Added for internal use, all lookups are either Single Line Text or Number fields
     ]
+
 FieldTypes: list[str] = FieldType.__args__
 
-class Field:
-    _type: FieldType = None
+@dataclass
+class Field[T]:
+    """Base class for all field types
+    using Field[T] allows for type hinting of the value attribute
 
-    def __init__(self, field_info: dict[str, dict[str, str]]):
-        
-        # Some field responses embed the code in the object
-        if 'code' in field_info:
-            data: dict[str, str] = field_info
-            self.code = data.pop('code')
+    Example:
+    ```python
+    @dataclass
+    class StringField(Field[str]): ...
 
-        # Other responses use the code as the key
-        else:
-            self.code, data = field_info.popitem()
+    @dataclass
+    class IntegerField(Field[int]): ...
 
-        # type is always set   
-        self.type: FieldType = data.pop('type', None)
-        
-        # value is set when accessing a record
-        self.value: dict = data.pop('value', None)
+    str_field = StringField()
+    int_field = IntegerField()
 
-        # Below values are set when accessing a Layout
-        self.label:str = data.pop('label',None)
-        self.elementId = data.pop('elementId', None)
-        
-        # Flatten size into Field attributes
-        size: dict = data.pop('size', None)
-        if size:
-            self.width: float = size.pop('width', None)
-            self.height: float = size.pop('height', None)
-            self.innerHeight: float = size.pop('innerHeight', None)
-        
-        # Store remaining response values in a private attribute
-        self._data = data
-
-    def __repr__(self):
-        return f'<{self.__class__.__name__}: {self.code} ({self.type})>'
+    int_field.value  # hinted as a int
+    str_field.value  # hinted as a str
+    ```
+    """
+    type: FieldType = Unset
+    value: T = Unset
 
 @dataclass
 class RecordNumber(Field):
-    _type = 'RECORD_NUMBER'
+    name: str = Unset
+    code: str = Unset
+    noLabel: bool = Unset
 
 @dataclass
-class RecordId(Field):
-    _type = '__ID__'
+class RecordId(Field): # Partially Documented
+    label: str = Unset 
 
 @dataclass
-class Revision(Field):
-    _type = '__REVISION__'
+class Revision(Field): ... # Undocumented
 
 @dataclass
 class CreatedBy(Field):
-    _type = 'CREATED_BY'
+    name: str = Unset
+    code: str = Unset
+    noLabel: bool = Unset
 
 @dataclass
 class CreatedDatetime(Field):
-    _type = 'CREATED_TIME'
+    name: str = Unset
+    code: str = Unset
+    noLabel: bool = Unset
 
 @dataclass
-class UpdatedBy(Field):
-    _type = 'MODIFIER'
+class UpdatedBy(CreatedBy): ...
 
 @dataclass
-class UpdatedDatetime(Field):
-    _type = 'UPDATED_TIME'
+class UpdatedDatetime(CreatedDatetime): ...
 
 
 # Custom Fields
 
 @dataclass
 class Text(Field):
-    _type = 'SINGLE_LINE_TEXT'
+    label: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    unique: bool = Unset
+    maxLength: int = Unset
+    minLength: int = Unset
+    defaultValue: str = Unset
+    expression: str = Unset
+    hideExpression: bool = Unset
+
 
 @dataclass 
 class TextArea(Field):
-    _type = 'MULTI_LINE_TEXT'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    defaultValue: str = Unset
 
 @dataclass
-class RichText(Field):
-    _type = 'RICH_TEXT'
-
+class RichText(TextArea): ...
+    
 @dataclass
 class Number(Field):
-    _type = 'NUMBER'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    unique: bool = Unset
+    maxValue: int = Unset
+    minValue: int = Unset
+    defaultValue: int = Unset
+    digit: int = Unset
+    displayScale: int = Unset
 
 @dataclass
 class Calculated(Field):
-    _type = 'CALC'
+    name: str = Unset
+    code: str = Unset
+    required: bool = False
+    noLabel: bool = Unset
+    expression: str = Unset
+    format: str = Unset
+    displayScale: int = Unset
+    hideExpression: bool = Unset
+
 
 @dataclass
 class CheckBox(Field):
-    _type = 'CHECK_BOX'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    defaultValue: bool = Unset
+    options: list[str] = Unset
 
 @dataclass
-class RadioButton(Field):
-    _type = 'RADIO_BUTTON'
+class RadioButton(CheckBox):
+    required: bool = True
 
 @dataclass
 class MultiChoice(Field):
-    _type = 'MULTI_SELECT'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    defaultValue: list[str] = Unset
+    options: list[str] = Unset
 
 @dataclass
-class Dropdown(Field):
-    _type = 'DROP_DOWN'
+class Dropdown(MultiChoice): ...
 
 @dataclass
 class UserSelection(Field):
-    _type = 'USER_SELECT'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
 
 @dataclass
-class DepartmentSelection(Field):
-    _type = 'ORGANIZATION_SELECT'
+class DepartmentSelection(UserSelection): ...
 
 @dataclass
-class GroupSelection(Field):
-    _type = 'GROUP_SELECT'
+class GroupSelection(UserSelection): ...
 
 @dataclass
 class Date(Field):
-    _type = 'DATE'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    unique: bool = Unset
+    defaultValue: str = Unset
+    defaultExpression: str = Unset
 
 @dataclass
 class Time(Field):
-    _type = 'TIME'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    defaultValue: str = Unset
+    defaultExpression: str = Unset
 
 @dataclass
-class DateAndTime(Field):
-    _type = 'DATETIME'
+class DateAndTime(Date): ...
 
 @dataclass
 class Link(Field):
-    _type = 'LINK'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    unique: bool = Unset
+    protocol: Literal['WEB', 'CALL', 'MAIL'] = Unset
+    maxLength: int = Unset
+    minLength: int = Unset
+    defaultValue: str = Unset
 
 @dataclass
 class Attachment(Field):
-    _type = 'FILE'
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
 
 # NOTE: Lookup fields are determined by their field code and
 #       can be either a Single Line Text or Number field
+#       Also, there is a Field Type of Key Field attribute
+#       that has an undocumented key
 @dataclass
 class Lookup(Field):
-    _type = '_LOOKUP' #('SINGLE_LINE_TEXT', 'NUMBER')
+    name: str = Unset
+    code: str = Unset
+    required: bool = Unset
+    noLabel: bool = Unset
+    relatedApp: str = Unset
+    _keyFieldType: str = Unset # Find out what this actually is
 
 @dataclass
 class Table(Field):
-    _type = 'SUBTABLE'
+    code: str = Unset
+    fields: list[Field] = Unset
 
 @dataclass
 class RelatedRecords(Field):
-    _type = 'REFERENCE_TABLE'
+    name: str = Unset
+    code: str = Unset
+    noLabel: bool = Unset
 
 @dataclass
-class Categories(Field):
-    _type = 'CATEGORY'
+class Categories(Field): ... # Undocumented
 
 @dataclass
-class Status(Field):
-    _type = 'STATUS'
+class Status(Field): ... # Undocumented
 
 @dataclass
-class Assignee(Field):
-    _type = 'STATUS_ASSIGNEE'
+class Assignee(Field): ... # Undocumented
 
 
 # Un-retrievable / Aesthetic Fields
 
 @dataclass
-class Label(Field): 
-    _type = 'LABEL'
+class Label(Field):
+    name: str = Unset
 
 @dataclass
 class BlankSpace(Field):
-    _type = 'SPACER'
+    elementId: str = Unset
 
 @dataclass
-class Border(Field):
-    _type = 'HR'
+class Border(Field): ...
 
 @dataclass
-class FieldGroup(Field):
-    _type = 'GROUP'
+class FieldGroup(Field): ... # Undocumented
 
-# Map the response type to the Field Subclass
+
+# Type map used to initialize the correct field object on request
 FieldTypeMap: dict[str, type[Field]] = {
-    field_type._type: field_type
-    for field_type in Field.__subclasses__()
+"RECORD_NUMBER": RecordNumber,
+"__ID__": RecordId,
+"__REVISION__": Revision,
+"CREATOR": CreatedBy,
+"CREATED_TIME": CreatedDatetime,
+"MODIFIER": UpdatedBy,
+"UPDATED_TIME": UpdatedDatetime,
+"SINGLE_LINE_TEXT": Text,
+"MULTI_LINE_TEXT": TextArea,
+"RICH_TEXT": RichText,
+"NUMBER": Number,
+"CALC": Calculated,
+"CHECK_BOX": CheckBox,
+"RADIO_BUTTON": RadioButton,
+"MULTI_SELECT": MultiChoice,
+"DROP_DOWN": Dropdown,
+"USER_SELECT": UserSelection,
+"ORGANIZATION_SELECT": DepartmentSelection,
+"GROUP_SELECT": GroupSelection,
+"DATE": Date,
+"TIME": Time,
+"DATETIME": DateAndTime,
+"LINK": Link,
+"FILE": Attachment,
+"_LOOKUP": Lookup,  # _LOOKUP needs to be set manually during creation
+"SUBTABLE": Table,
+"REFERENCE_TABLE": RelatedRecords,
+"CATEGORY": Categories,
+"STATUS": Status,
+"STATUS_ASSIGNEE": Assignee,
+"LABEL": Label,
+"SPACER": BlankSpace,
+"HR": Border,
+"GROUP": FieldGroup,
 }
-
-if __name__ == '__main__':
-    for name, type_ in FieldTypeMap.items():
-        print(f'{name}: {type_}')
