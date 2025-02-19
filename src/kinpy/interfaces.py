@@ -51,7 +51,7 @@ class KTQueryable(list):
             return KTQueryable(self + [None] * (n - len(self)))
         return KTQueryable(self[:n])
 
-    def query(self, func: Callable) -> KTQueryable[KType]:
+    def query(self, func: Callable) -> KTQueryable[]:
         """Return a new KTQueryable with only items that match the function"""
         return KTQueryable(item for item in self if func(item))
 
