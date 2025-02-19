@@ -2,6 +2,19 @@ import psutil
 import sys
 import subprocess
 
+from key import DEVICE_APP_KEY
+
+import tkinter as tk
+from tkinter import messagebox
+
+from src.kinpy import App as Kintone_App
+
+
+
+
+
+
+
 # Get total memory in bytes and convert to GB
 total_memory_gb = psutil.virtual_memory().total / (1024 ** 3)
 
