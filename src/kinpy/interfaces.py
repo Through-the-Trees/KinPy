@@ -76,13 +76,6 @@ class Kintone:
         route = self.routes.get_apps()
 
         return KTQueryable(KTApp(**route()) for route in route)
-    
-    def test(self):
-        return self.routes.get_apps()
-    
-test_var = Kintone('https://throughthetrees.kintone.com/k/v1/', KintoneAuth('123'), True)
-
-print(test_var)
 
 class KTApp:
     def __init__(self, kintone: Kintone, app_id: int) -> None:
