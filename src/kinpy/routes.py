@@ -235,7 +235,7 @@ class Routes:
                 if isinstance(self.handler, HTTPX_Async):
                     return AsyncRoute(method, endpoint, self.handler, params=params, **opts)
                 
-                raise AttributeError("Invalid Handler type, must be `HTTPX_Sync` or `HTTPS_Async`")
+                raise AttributeError("Invalid Handler type, must be `HTTPX_Sync` or `HTTPX_Async`")
                 
             return _wrapped
         return _wrapper
