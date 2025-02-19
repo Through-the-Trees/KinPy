@@ -199,7 +199,7 @@ class Routes:
                 # Build param sets
                 kwarg_set = set(kwargs.keys())
                 required_set = set(required)
-                optional_set = set(optional) if optional else None
+                optional_set = set(optional) if optional else {}
                 param_set = required_set.union(optional_set)
                 
                 # Validate required params
