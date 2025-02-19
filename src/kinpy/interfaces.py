@@ -12,24 +12,25 @@ from typing import (
     Callable,
 )
 
-from .routes import Routes
-from .handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
-from .models import KTApp
+from httpx import Client
+
+from routes import Routes
+from handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
 
 # TODO: Return type of a container property (e.g. .get_apps()) should be a bespoke container class
 # That implements nice indexing and "select_by" methods. For reference see C# LINQ
 
-class KTQueryable[KType](list):
+class KTQueryable(list):
     """Extension of list that allows for simple querying of returned Kintone objects"""
     
-    def pop_where(self, **kwargs) -> Optional[KType]:
+    def pop_where(self, **kwargs) -> Optional:
         """Pop the first item that matches the key-value pair"""
         for i, item in enumerate(self):
             if all(getattr(item, key) == value for key, value in kwargs.items()):
                 return self.pop(i)
         return None
     
-    def select_where(self, **kwargs) -> KTQueryable[KType]:
+    def select_where(self, **kwargs) -> KTQueryable:
         """Return a new KTQueryable with only items that match the key-value pair"""
         return KTQueryable(
             item 
@@ -40,7 +41,7 @@ class KTQueryable[KType](list):
                 )
             )
     
-    def take(self, n: int) -> KTQueryable[KType]:
+    def take(self, n: int) -> KTQueryable:
         """Return a new KTQueryable with the first n items 
         and pad with None if n > len(self).
 
@@ -70,12 +71,19 @@ class Kintone:
         self.routes = Routes(self.handler)
 
     @property
-    def apps(self) -> KTQueryable[KTApp]:
+    def apps(self) -> KTQueryable:
         """Return a list of Apps"""
         route = self.routes.get_apps()
 
         return KTQueryable(KTApp(**route()) for route in route)
     
+    def test(self):
+        return self.routes.get_apps()
+    
+test_var = Kintone('https://throughthetrees.kintone.com/k/v1/', KintoneAuth('123'), True)
+
+print(test_var)
+
 class KTApp:
     def __init__(self, kintone: Kintone, app_id: int) -> None:
         ...

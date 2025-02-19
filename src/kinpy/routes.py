@@ -8,8 +8,8 @@ from typing import (
 from functools import wraps
 from httpx import Response
 
-from .handlers import HTTPX_Async, HTTPX_Sync
-from .utils import QueryString
+from handlers import HTTPX_Async, HTTPX_Sync
+from utils import QueryString
 
 class Route:
     RequestType = Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
