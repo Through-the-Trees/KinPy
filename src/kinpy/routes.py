@@ -247,7 +247,7 @@ class Routes:
         Args:
             id: The App ID to get (required)
         """
-        return self
+        ...
 
     @register_route('GET', '/k/v1/apps.json', optional=('ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'))
     def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> Route: 
