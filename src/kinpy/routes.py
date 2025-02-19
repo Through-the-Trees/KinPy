@@ -203,16 +203,16 @@ class Routes:
                 param_set = required_set.union(optional_set)
                 
                 # Validate required params
-                if not required_set.issubset(kwarg_set):
-                    raise ValueError(
-                        f"Request requires these params: {required_set.difference(kwarg_set)}"
-                        )
+                # if not required_set.issubset(kwarg_set):
+                #     raise ValueError(
+                #         f"Request requires these params: {required_set.difference(kwarg_set)}"
+                #         )
                 
-                # Validate passed params
-                if not kwarg_set.issubset(param_set):
-                    raise ValueError(
-                        f"Invalid parameters: {kwarg_set.difference(param_set)}"
-                        )
+                # # Validate passed params
+                # if not kwarg_set.issubset(param_set):
+                #     raise ValueError(
+                #         f"Invalid parameters: {kwarg_set.difference(param_set)}"
+                #         )
                 
                 # Build params
                 params = {}
@@ -222,12 +222,12 @@ class Routes:
                         value = value.encode()
                     params[param] = value
                 
-                # Validate param types against annotation hints
-                for param, value in params.items():
-                    if not isinstance(value, _wrapped.__annotations__[param]):
-                        raise TypeError(
-                            f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
-                            )
+                # # Validate param types against annotation hints
+                # for param, value in params.items():
+                #     if not isinstance(value, _wrapped.__annotations__[param]):
+                #         raise TypeError(
+                #             f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
+                #             )
                 
                 if isinstance(self.handler, HTTPX_Sync):
                     return SyncRoute(method, endpoint, self.handler, params=params, **opts)
@@ -247,7 +247,7 @@ class Routes:
         Args:
             id: The App ID to get (required)
         """
-        ...
+        return self
 
     @register_route('GET', '/k/v1/apps.json', optional=('ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'))
     def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> Route: 
