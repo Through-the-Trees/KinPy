@@ -75,3 +75,7 @@ class Kintone:
         route = self.routes.get_apps()
 
         return KTQueryable(KTApp(**route()) for route in route)
+    
+class KTApp:
+    def __init__(self, kintone: Kintone, app_id: int) -> None:
+        ...

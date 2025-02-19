@@ -3,12 +3,12 @@
 __version__ = '0.0.1'
 
 # Uncomment as interfaces are defined
-#from interfaces import (
-#    Kintone,
+from interfaces import (
+   Kintone,
 #    KTApp,
 #    KTRecord,
 #    KTField,
-#)
+)
 
 # Kintone Auth is required for initialization of the Kintone interface
 from .handlers import KintoneAuth
