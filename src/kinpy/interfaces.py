@@ -12,7 +12,7 @@ from typing import (
     Callable,
 )
 
-from httpx import Client
+from httpx import Client as HTTPX_Client
 
 from routes import Routes
 from handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
@@ -62,11 +62,12 @@ class KTQueryable(list):
 
 
 class Kintone:
-    def __init__(self, url: str, auth: KintoneAuth, sync: bool = True) -> None:
+    def __init__(self, base_url: str, auth: KintoneAuth, sync: bool = True) -> None:
+        client = HTTPX_Client(base_url=base_url)
         if sync:
-            self.handler = HTTPX_Sync(url, auth)
+            self.handler = HTTPX_Sync(client, auth)
         else:
-            self.handler = HTTPX_Async(url, auth)
+            self.handler = HTTPX_Async(client, auth)
         
         self.routes = Routes(self.handler)
 
