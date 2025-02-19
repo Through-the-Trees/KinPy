@@ -23,7 +23,7 @@ from handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
 class KTQueryable(list):
     """Extension of list that allows for simple querying of returned Kintone objects"""
     
-    def pop_where(self, **kwargs) -> Optional:
+    def pop_where(self, **kwargs):
         """Pop the first item that matches the key-value pair"""
         for i, item in enumerate(self):
             if all(getattr(item, key) == value for key, value in kwargs.items()):
@@ -51,7 +51,7 @@ class KTQueryable(list):
             return KTQueryable(self + [None] * (n - len(self)))
         return KTQueryable(self[:n])
 
-    def query(self, func: Callable) -> KTQueryable[]:
+    def query(self, func: Callable) -> KTQueryable:
         """Return a new KTQueryable with only items that match the function"""
         return KTQueryable(item for item in self if func(item))
 
