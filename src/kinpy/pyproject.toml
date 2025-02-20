@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kinpy"
-version = "2020.0.0"
+version = "0.0.0"
 dependencies = [
   "httpx",
 ]
