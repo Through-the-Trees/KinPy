@@ -1,19 +1,21 @@
-import psutil
 import sys
 import subprocess
-
-from key import DEVICE_APP_KEY
 
 import tkinter as tk
 from tkinter import messagebox
 
-from src.kinpy import App as Kintone_App
+
+from kinpy import Kintone, KintoneAuth
+
+
+test = Kintone('https://throughthetrees.kintone.com/k/v1/', KintoneAuth('132'), True)
+
+print(test.routes.get_app(id=1))
 
 
 
-
-
-
+sys.exit()
+print('test')
 
 # Get total memory in bytes and convert to GB
 total_memory_gb = psutil.virtual_memory().total / (1024 ** 3)

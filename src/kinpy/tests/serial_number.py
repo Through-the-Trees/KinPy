@@ -1,7 +1,6 @@
 from typing import Any
 
 from KinPy_old import App as Kintone_App
-from key import DEVICE_APP_KEY
 
 import sys
 import subprocess

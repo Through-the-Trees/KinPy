@@ -80,4 +80,4 @@ class Kintone:
 
 class KTApp:
     def __init__(self, kintone: Kintone, app_id: int) -> None:
-        ...
+        route = kintone.routes.get_app(app_id)
