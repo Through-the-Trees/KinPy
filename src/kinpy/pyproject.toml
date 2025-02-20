@@ -1,0 +1,27 @@
+[project]
+name = "kinpy"
+version = "2020.0.0"
+dependencies = [
+  "httpx",
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "Daniel Rubianes", email = "DanielRubianesNC@gmail.com"},
+  {name = "Hayden Welch"},
+]
+# maintainers = [
+# ]
+description = "Python interface for Kintone REST API"
+license = "GNU"
+keywords = ["Kintone", "REST", "API"]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Homepage = "https://github.com/Through-the-Trees/KinPy"
+# Documentation = ""
+Repository = "https://github.com/Through-the-Trees/KinPy.git"
+"Bug Tracker" = "https://github.com/Through-the-Trees/KinPy/issues"
+# Changelog = ""
