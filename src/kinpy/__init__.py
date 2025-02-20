@@ -11,4 +11,4 @@ from interfaces import (
 )
 
 # Kintone Auth is required for initialization of the Kintone interface
-from .handlers import KintoneAuth
+from handlers import KintoneAuth
