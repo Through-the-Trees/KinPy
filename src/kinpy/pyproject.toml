@@ -12,7 +12,6 @@ authors = [
 # maintainers = [
 # ]
 description = "Python interface for Kintone REST API"
-license = "GNU"
 keywords = ["Kintone", "REST", "API"]
 classifiers = [
   "Development Status :: 1 - Planning",
