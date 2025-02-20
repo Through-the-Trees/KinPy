@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-from kinpy import Kintone, KintoneAuth
+from ...kinpy import Kintone, KintoneAuth
 
 
 test = Kintone('https://throughthetrees.kintone.com/k/v1/', KintoneAuth('132'), True)
