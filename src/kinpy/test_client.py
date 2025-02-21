@@ -5,17 +5,17 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-from ...kinpy import Kintone, KintoneAuth
+from interfaces import Kintone, KintoneAuth
 
 
 test = Kintone('https://throughthetrees.kintone.com/k/v1/', KintoneAuth('132'), True)
 
-print(test.routes.get_app(id=1))
+print(test.routes.get_app(id=1)())
 
 
 
-sys.exit()
 print('test')
+sys.exit()
 
 # Get total memory in bytes and convert to GB
 total_memory_gb = psutil.virtual_memory().total / (1024 ** 3)
