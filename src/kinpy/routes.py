@@ -141,8 +141,8 @@ class Routes:
         self.handler = handler
     
     def register_route(method: Route.RequestType, endpoint: str, *,
-                       required: tuple[str] = None, 
-                       optional: tuple[str] = None,
+                       required: list[str] = None, 
+                       optional: list[str] = None,
                        **opts) -> Route:
         """Define a route using a function header and type hints
         
@@ -167,7 +167,7 @@ class Routes:
             if a parameter is specified both positionally and as a keyword.
             
         Example:
-            >>> @register_route('GET', '/k/v1/app.json ', required=('id'))
+            >>> @register_route('GET', '/k/v1/app.json ', required=['id'])
             ... def get_app(self, id: int | str) -> SyncRoute | AsyncRoute: 
             ...    '''Get an App by ID'''
             ...    ...
@@ -240,7 +240,7 @@ class Routes:
             return _wrapped
         return _wrapper
 
-    @register_route('GET', '/k/v1/app.json ', required=('id'))
+    @register_route('GET', '/k/v1/app.json ', required=['id'])
     def get_app(self, id: int | str) -> Route: 
         """Get an App by ID
         
@@ -249,7 +249,7 @@ class Routes:
         """
         ...
 
-    @register_route('GET', '/k/v1/apps.json', optional=('ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'))
+    @register_route('GET', '/k/v1/apps.json', optional=['ids', 'codes', 'name', 'spaceIds', 'limit', 'offset'])
     def get_apps(self, ids: list[int | str], codes: list[str], name: str, spaceIds: list[int | str], limit: int, offset: int) -> Route: 
         """Get Apps that match the specified criteria
         
