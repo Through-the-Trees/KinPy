@@ -272,14 +272,44 @@ class Routes:
 
     @register_route('GET', '/k/v1/record.json', required=['app', 'id'])
     def get_record(self, app: int | str, id: int | str) -> Route: 
-        """Get Apps that match the specified criteria
+        """Get a records within an app by record id
+        
+        Args:
+            app: App ID to retrieve record from (required)
+            id: Record ID to retrieve (required)
+        """
+        ...
+
+    @register_route('GET', '/k/v1/records.json', required=['app'], optional=['fields', 'query', 'totalCount'])
+    def get_records(self, app: int | str, fields: list[str], query: str, totalCount: bool | str) -> Route: 
+        """Get a list of records within an app (limit 500 per request)
+        
+        Args:
+            app: App ID to retrieve record from (required)
+            fields: List of fields to retrieve (optional)
+            query: Query string in Kintone's proprietary SQL-ish format (optional)
+                Docs here: https://kintone.dev/en/docs/kintone/overview/query-string/
+            totalCount: True = server will return record count in response (optional) (default=False)
+        """
+        ...
+
+    @register_route('POST', '/k/v1/record.json', required=['app', 'record'])
+    def add_record(self, app: int | str, record: Any) -> Route:
+        """Creates a new record within specified app
         
         Args:
             app: App ID to retrieve record from
-            id: Record ID to retrieve
-        Note:
-            All parameters are optional, but at least one must be specified for the request to be valid
-            Currently unused; requires user/pass auth, rather than API key
+            record: JSON object representing a record
+        """
+        ...
+    
+    @register_route('POST', '/k/v1/records.json', required=['app', 'records'])
+    def add_records(self, app: int | str, record: Any) -> Route:
+        """Creates a new record within specified app
+        
+        Args:
+            app: App ID to retrieve record from
+            record: list of JSON objects representing records
         """
         ...
 
