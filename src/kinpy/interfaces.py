@@ -12,6 +12,8 @@ from typing import (
     Callable,
 )
 
+import functools
+
 from httpx import Client as HTTPX_Client
 
 from routes import Routes
@@ -60,9 +62,10 @@ class KTQueryable(list):
             return KTQueryable(super().__getitem__(key))
         return super().__getitem__(key)
 
-
 class Kintone:
     def __init__(self, base_url: str, auth: KintoneAuth, sync: bool = True) -> None:
+        # NOTE: Should auth be handled on a per-app basis?
+        # API Keys only allow permissions within apps, to do anything to the greater Kintone portal, you need user/pass auth
         client = HTTPX_Client(base_url=base_url)
         if sync:
             self.handler = HTTPX_Sync(client, auth)
@@ -72,12 +75,17 @@ class Kintone:
         self.routes = Routes(self.handler)
 
     @property
-    def apps(self) -> KTQueryable:
+    def apps(self) -> list:
         """Return a list of Apps"""
         route = self.routes.get_apps()
 
-        return KTQueryable(KTApp(**route()) for route in route)
+        return route()
 
 class KTApp:
     def __init__(self, kintone: Kintone, app_id: int) -> None:
-        route = kintone.routes.get_app(app_id)
+        
+        self.app_id = app_id
+
+        self.routes = Routes(kintone.handler)
+        self.info = kintone.routes.get_app(app_id)
+        self.get_record = functools.partial(kintone.routes.get_record, app=self.app_id)
