@@ -246,6 +246,9 @@ class Routes:
         
         Args:
             id: The App ID to get (required)
+
+        Note:
+            Currently unused; requires user/pass auth, rather than API key
         """
         ...
 
@@ -263,7 +266,22 @@ class Routes:
         
         Note:
             All parameters are optional, but at least one must be specified for the request to be valid
+            Currently unused; requires user/pass auth, rather than API key
         """
         ...
-        # TODO: Implement all routes from here: https://kintone.dev/en/docs/kintone/rest-api/
+
+    @register_route('GET', '/k/v1/record.json', required=['app', 'id'])
+    def get_record(self, app: int | str, id: int | str) -> Route: 
+        """Get Apps that match the specified criteria
+        
+        Args:
+            app: App ID to retrieve record from
+            id: Record ID to retrieve
+        Note:
+            All parameters are optional, but at least one must be specified for the request to be valid
+            Currently unused; requires user/pass auth, rather than API key
+        """
+        ...
+
+    # TODO: Implement all routes from here: https://kintone.dev/en/docs/kintone/rest-api/
 
