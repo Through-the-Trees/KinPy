@@ -17,7 +17,7 @@ kintone_portal = Kintone('https://throughthetrees.kintone.com/k/v1/', test_auth,
 
 test_app = KTApp(kintone_portal, 13)
 
-get_record = test_app.get_record(id=1)
+get_record: Response = test_app.get_record(id=1)
 
 apps_response: dict = json.loads(get_record().content)
 
