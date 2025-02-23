@@ -97,7 +97,21 @@ class KTApp:
         # TODO: Reformat these to match get_records execution pattern
         # TODO: Implement user/pass auth for portal-level functions
         self.info = self._portal.routes.get_app(app_id)
-        self.get_record = functools.partial(self._portal.routes.get_record, app=self.app_id)
+
+    def get_record(self, id: int):
+        """Get record by $id"""
+        route = self._portal.routes.get_record(app=self.app_id, id=id)
+        response: dict = json.loads(route().content)
+        if 'record' not in response:
+            return None
+
+        record: dict[str, Any] = \
+        {
+            key: value['value']
+            for key, value in response['record'].items()
+        }
+
+        return record
 
     # TODO: Implement record and field data models here
     # Is there any way to make the class definition dynamic such that I can arbitrarily pass kwargs with field names?
