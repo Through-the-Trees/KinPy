@@ -281,12 +281,12 @@ class Routes:
         ...
 
     @register_route('GET', '/k/v1/records.json', required=['app'], optional=['fields', 'query', 'totalCount'])
-    def get_records(self, app: int | str, fields: list[str], query: str, totalCount: bool | str) -> Route: 
+    def get_records(self, app: int | str, fields: str, query: str, totalCount: bool | str) -> Route: 
         """Get a list of records within an app (limit 500 per request)
         
         Args:
             app: App ID to retrieve record from (required)
-            fields: List of fields to retrieve (optional)
+            fields: Comma-separated list in string form listing desired fields (e.g. '$id, Text, Text2') (optional)
             query: Query string in Kintone's proprietary SQL-ish format (optional)
                 Docs here: https://kintone.dev/en/docs/kintone/overview/query-string/
             totalCount: True = server will return record count in response (optional) (default=False)
