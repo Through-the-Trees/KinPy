@@ -103,19 +103,19 @@ class KTApp:
     # Is there any way to make the class definition dynamic such that I can arbitrarily pass kwargs with field names?
     def get_records(self, fields: list[str], query: QueryString = QueryString(''), _last_record_id: int = None) -> dict[str, Any]:
         """Runs a bulk set of requests to retrieve records (one API call per 500 records)"""
-
+        
         chunk_size = 500
+        order_and_limit = QueryString(f'order by $id asc limit {chunk_size}')
 
         # Recursive query appended each iteration
-        bulk_query = f'$id > {_last_record_id}' if _last_record_id else ''
+        bulk_query = QueryString(f'$id > {_last_record_id}') if _last_record_id else QueryString('')
 
-        # TODO: utilize QueryString class to simplify this & test
-        query = f'({query}) and ' + bulk_query if query and bulk_query else query + bulk_query
+        query: QueryString = query & bulk_query
 
         route = self._portal.routes.get_records(
             app = self.app_id,
             fields = ','.join(fields + ['$id']),
-            query = query + f' order by $id limit {chunk_size}',
+            query = str(query + order_and_limit),
             totalCount = True
         )
 
