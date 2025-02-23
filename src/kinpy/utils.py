@@ -53,7 +53,7 @@ class QueryString(str):
         """Useful for appending order by, limit, etc."""
         if self and other:
             return QueryString(f"{self.query} {other.query}")
-        return QueryString( str(self.query) + str(other.query) )
+        return QueryString( self.query + other.query )
     def __and__(self, other: QueryString):
         if self and other:
             return QueryString(f"{self.query} and {other.query}")
