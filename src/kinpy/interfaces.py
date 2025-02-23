@@ -115,7 +115,7 @@ class KTApp:
         route = self._portal.routes.get_records(
             app = self.app_id,
             fields = ','.join(fields + ['$id']),
-            query = query + f' order by $id limit {chunk_size}', # TODO: Test this without limit; is Kintone already limiting for us?
+            query = query + f' order by $id limit {chunk_size}',
             totalCount = True
         )
 
