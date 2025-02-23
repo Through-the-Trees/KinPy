@@ -49,11 +49,20 @@ class QueryString(str):
         return self
 
     # Query Joins (These create new QueryString objects)
+    def __add__(self, other: QueryString):
+        """Useful for appending order by, limit, etc."""
+        if self and other:
+            return QueryString(f"{self.query} {other.query}")
+        return QueryString( str(self.query) + str(other.query) )
     def __and__(self, other: QueryString):
-        return QueryString(f"{self.query} and {other}")
+        if self and other:
+            return QueryString(f"{self.query} and {other.query}")
+        return self + other
     
     def __or__(self, other: QueryString):
-        return QueryString(f"{self.query} or {other}")
+        if self and other:
+            return QueryString(f"{self.query} or {other.query}")
+        return self + other
     
     # String/Number comparisons
     def __eq__(self, other: str):
