@@ -7,12 +7,15 @@ with a depreciation warning in the previous minor version.
 from __future__ import annotations
 
 from typing import (
+    Any,
     TypeVar, 
     Optional,
     Callable,
 )
 
 import functools
+
+import json
 
 from httpx import Client as HTTPX_Client
 
@@ -75,6 +78,7 @@ class KintonePortal:
         
         self.routes = Routes(self.handler)
 
+    # TODO: Implement user/pass auth for portal-level functions
     @property
     def apps(self) -> list:
         """Return a list of Apps"""
@@ -89,9 +93,53 @@ class KTApp:
         self.app_id = app_id
 
         self.routes = Routes(self._portal.handler)
+
+        # TODO: Reformat these to match get_records execution pattern
         # TODO: Implement user/pass auth for portal-level functions
         self.info = self._portal.routes.get_app(app_id)
         self.get_record = functools.partial(self._portal.routes.get_record, app=self.app_id)
+
+    # TODO: Implement record and field data models here
+    # Is there any way to make the class definition dynamic such that I can arbitrarily pass kwargs with field names?
+    def get_records(self, fields: list[str], query: QueryString = QueryString(''), _last_record_id: int = None) -> dict[str, Any]:
+        """Runs a bulk set of requests to retrieve records (one API call per 500 records)"""
+
+        chunk_size = 500
+
+        # Recursive query appended each iteration
+        bulk_query = f'$id > {_last_record_id}' if _last_record_id else ''
+
+        # TODO: utilize QueryString class to simplify this & test
+        query = f'({query}) and ' + bulk_query if query and bulk_query else query + bulk_query
+
+        route = self._portal.routes.get_records(
+            app = self.app_id,
+            fields = ','.join(fields + ['$id']),
+            query = query + f' order by $id limit {chunk_size}', # TODO: Test this without limit; is Kintone already limiting for us?
+            totalCount = True
+        )
+
+        response: dict = json.loads(route().content)
+
+        if 'records' not in response:
+            return None
+
+        # Simplify record structure into simple dict
+        # ['field_name': value, ...]
+        records: list[ dict[str, Any] ] = \
+        [
+            {
+                key: value['value']
+                for key, value in record.items()
+            }
+            for record in response['records']
+        ]
         
-    def get_records(self, fields: list[str], query: QueryString):
-        self._portal.routes.get_records(app=self.app_id)
+        # Total count of records matching query (only max of 500 returned)
+        total_count = int(response['totalCount'])
+        if total_count > chunk_size:
+            last_record_id = max(int(record['$id']) for record in records)
+            return records + self.get_records(fields, query, last_record_id)
+        else:
+            return records
+
