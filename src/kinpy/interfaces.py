@@ -18,6 +18,7 @@ from httpx import Client as HTTPX_Client
 
 from routes import Routes
 from handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
+from utils import QueryString
 
 # TODO: Return type of a container property (e.g. .get_apps()) should be a bespoke container class
 # That implements nice indexing and "select_by" methods. For reference see C# LINQ
@@ -62,7 +63,7 @@ class KTQueryable(list):
             return KTQueryable(super().__getitem__(key))
         return super().__getitem__(key)
 
-class Kintone:
+class KintonePortal:
     def __init__(self, base_url: str, auth: KintoneAuth, sync: bool = True) -> None:
         # NOTE: Should auth be handled on a per-app basis?
         # API Keys only allow permissions within apps, to do anything to the greater Kintone portal, you need user/pass auth
@@ -82,10 +83,15 @@ class Kintone:
         return route()
 
 class KTApp:
-    def __init__(self, kintone: Kintone, app_id: int) -> None:
+    def __init__(self, kintone_portal: KintonePortal, app_id: int) -> None:
         
+        self._portal = kintone_portal
         self.app_id = app_id
 
-        self.routes = Routes(kintone.handler)
-        self.info = kintone.routes.get_app(app_id)
-        self.get_record = functools.partial(kintone.routes.get_record, app=self.app_id)
+        self.routes = Routes(self._portal.handler)
+        # TODO: Implement user/pass auth for portal-level functions
+        self.info = self._portal.routes.get_app(app_id)
+        self.get_record = functools.partial(self._portal.routes.get_record, app=self.app_id)
+        
+    def get_records(self, fields: list[str], query: QueryString):
+        self._portal.routes.get_records(app=self.app_id)

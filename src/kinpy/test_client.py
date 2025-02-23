@@ -5,21 +5,22 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-from interfaces import Kintone, KTApp, KintoneAuth
+from interfaces import KintonePortal, KTApp, KintoneAuth
 
 from key import TEST_APP_KEY
 from httpx import Response
+from routes import Route
 import json
 
 test_auth = KintoneAuth(TEST_APP_KEY)
 
-kintone_portal = Kintone('https://throughthetrees.kintone.com/k/v1/', test_auth, True)
+kintone_portal = KintonePortal('https://throughthetrees.kintone.com/k/v1/', test_auth, True)
 
 test_app = KTApp(kintone_portal, 13)
 
-get_record: Response = test_app.get_record(id=1)
+record_one: Route = test_app.get_record(id=1)
 
-apps_response: dict = json.loads(get_record().content)
+apps_response: dict = json.loads(record_one().content)
 
 # print(apps_response.headers)
 print(apps_response)
