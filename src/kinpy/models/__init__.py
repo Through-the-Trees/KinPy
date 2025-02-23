@@ -16,7 +16,6 @@ from .fields import Field
 
 Unset = object()
 
-# NOTE: As far as I know, Kintone only uses PUT requests though, so it's important to always
 # Send the full object data back when updating a record
 
 
@@ -71,7 +70,6 @@ class Model:
 # that the field is not required. Make sure you set the default value to `Unset`
 # so that None/Null can be passes as a value to delete a value.
 
-# Remember: Kintone only uses PUT requests, so always send the full object data back
 # To do this, you take a record that was returned and update it with a partial record
 
 # e.g. 
