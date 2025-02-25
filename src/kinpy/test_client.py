@@ -10,14 +10,13 @@ from tkinter import simpledialog, messagebox
 # from kinpy import KintonePortal, KTApp
 from interfaces import KintonePortal, KTApp
 from utils import QueryString
-from key import DEVICE_AUTH
+from key import DEVICE_AUTH, TEST_AUTH
 
-kintone_portal = KintonePortal('https://throughthetrees.kintone.com/k/v1/', TEST_AUTH, True)
-test_app = KTApp(kintone_portal, 13)
+kintone_portal = KintonePortal('https://throughthetrees.kintone.com/k/v1/', DEVICE_AUTH, True)
 
+# test_app = KTApp(kintone_portal, 13)
 # records = test_app.get_records(fields=['Record_Status'])
-
-
+# my_record = test_app.get_record(1)
 
 devices_app = KTApp(kintone_portal, 4)
 
@@ -62,7 +61,12 @@ if not device:
     root.destroy()
     sys.exit()
 
-elif device[Fields.serial_number] == serial_number:
+output = devices_app.update_record(device)
+
+messagebox.showinfo("Info", output)
+sys.exit()
+
+if device[Fields.serial_number] == serial_number:
     messagebox.showinfo("Info", "This record has the correct serial number.")
 elif devices_app.update_record(query, 'Text_5', serial_number):
     output = f"Device Serial Number: {serial_number}"
