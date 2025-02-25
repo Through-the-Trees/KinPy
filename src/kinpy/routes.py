@@ -289,12 +289,12 @@ class Routes:
             fields: Comma-separated list in string form listing desired fields (e.g. '$id, Text, Text2') (optional)
             query: Query string in Kintone's proprietary SQL-ish format (optional)
                 Docs here: https://kintone.dev/en/docs/kintone/overview/query-string/
-            totalCount: True = server will return record count in response (optional) (default=False)
+            totalCount: True = Server will return record count in response (optional) (default=False)
         """
         ...
 
     @register_route('POST', '/k/v1/record.json', required=['app', 'record'])
-    def add_record(self, app: int | str, record: Any) -> Route:
+    def add_record(self, app: int | str, record: str) -> Route:
         """Creates a new record within specified app
         
         Args:
@@ -304,14 +304,36 @@ class Routes:
         ...
     
     @register_route('POST', '/k/v1/records.json', required=['app', 'records'])
-    def add_records(self, app: int | str, record: Any) -> Route:
+    def add_records(self, app: int | str, record: str) -> Route:
         """Creates a new record within specified app
         
         Args:
             app: App ID to retrieve record from
-            record: list of JSON objects representing records
+            record: List of JSON objects representing records
         """
         ...
+
+    @register_route('PUT', '/k/v1/record.json', required=['app', 'id'], optional=['record', 'updateKey', 'revision'])
+    def update_record(self, app: int | str, id: str, record: str, updateKey, revision) -> Route:
+        """Updates specified record within app database
+        Args:
+            app: App ID to update
+            id: Record ID to update
+
+            record: JSON objects representing record to be updated
+
+            updateKey: Dict representing field name and new value
+                updateKey['field']: Field name
+                updateKey['value']: New field value
+            
+            revision: The expected revision number. If the value does not match, an error will occur and the record will not be updated. If the value is not specified or is -1, the revision number will not be checked.
+
+        Note:
+            User can either pass a JSON object to update the record OR
+            User can specify updateKey to update a single field (field name and value)
+        """
+        ...
+    
 
     # TODO: Implement all routes from here: https://kintone.dev/en/docs/kintone/rest-api/
 
