@@ -3,3 +3,4 @@ key.py
 *.pyo
 __pycache__
 build
+*.egg-info
