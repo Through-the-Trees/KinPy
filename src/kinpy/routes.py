@@ -8,6 +8,8 @@ from typing import (
 from functools import wraps
 from httpx import Response
 
+import json
+
 from handlers import HTTPX_Async, HTTPX_Sync
 from utils import QueryString
 
@@ -143,6 +145,7 @@ class Routes:
     def register_route(method: Route.RequestType, endpoint: str, *,
                        required: list[str] = None, 
                        optional: list[str] = None,
+                       json_content: bool = False,
                        **opts) -> Route:
         """Define a route using a function header and type hints
         
@@ -229,7 +232,10 @@ class Routes:
                             f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
                             )
                 
-                if isinstance(self.handler, HTTPX_Sync):
+                # TODO: Come up with a more elegant solution here; get requests to not accept a json body, but some put requests require it.
+                if isinstance(self.handler, HTTPX_Sync) and json_content:
+                    return SyncRoute(method, endpoint, self.handler, json=params, **opts)
+                elif isinstance(self.handler, HTTPX_Sync):
                     return SyncRoute(method, endpoint, self.handler, params=params, **opts)
                 
                 if isinstance(self.handler, HTTPX_Async):
@@ -313,8 +319,8 @@ class Routes:
         """
         ...
 
-    @register_route('PUT', '/k/v1/record.json', required=['app', 'id'], optional=['record', 'updateKey', 'revision'])
-    def update_record(self, app: int | str, id: str, record: str, updateKey, revision) -> Route:
+    @register_route('PUT', '/k/v1/record.json', required=[], optional=['app', 'record', 'id', 'updateKey', 'revision'], json_content=True)
+    def update_record(self, app: str | int, record: dict, id: str | int, updateKey, revision) -> Route:
         """Updates specified record within app database
         Args:
             app: App ID to update
