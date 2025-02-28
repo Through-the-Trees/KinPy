@@ -61,9 +61,12 @@ if not device:
     root.destroy()
     sys.exit()
 
+device[Fields.serial_number] = serial_number
+
 output = devices_app.update_record(device)
 
-messagebox.showinfo("Info", output)
+print(output)
+
 sys.exit()
 
 if device[Fields.serial_number] == serial_number:
