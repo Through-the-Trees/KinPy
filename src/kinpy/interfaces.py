@@ -137,8 +137,6 @@ class KTApp:
 
         if 'records' not in response:
             return None
-        
-        print('response:\n' + str(response['records']))
 
         # Simplify record structure into simple dict
         # ['field_name': value, ...]
@@ -162,16 +160,14 @@ class KTApp:
     def update_record(self, record: dict[str, Any]):
         """Update specified record ($id needs to be specified)"""
 
-        # # Re-structure record in API-friendly format
+        # Re-structure record in API-friendly format
         record_update: dict[str, dict[str, Any] ] = \
         {
             k: {'value': v}
             for k, v in record.items() if k != '$id'
         }
 
-        print(record_update)
-
-        route = self._portal.routes.update_record(app=self.app_id, id=record['$id'], record=json.dumps(record_update))
+        route = self._portal.routes.update_record(app=self.app_id, id=record['$id'], record=record_update)
         response: dict = json.loads(route().content)
 
         return response
