@@ -239,14 +239,16 @@ class Routes:
                             f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
                             )
                 
-                # TODO: Come up with a more elegant solution here; get requests to not accept a json body, but some put requests require it.
-                if isinstance(self.handler, HTTPX_Sync) and json_content:
-                    return SyncRoute(method, endpoint, self.handler, json=params, **opts)
-                elif isinstance(self.handler, HTTPX_Sync):
-                    return SyncRoute(method, endpoint, self.handler, params=params, **opts)
+                if json_request:
+                    overrides['json'] = params
+                else:
+                    overrides['params'] = params
+                    
+                if isinstance(self.handler, HTTPX_Sync) and json_request:
+                    return SyncRoute(method, endpoint, self.handler, **overrides)
                 
                 if isinstance(self.handler, HTTPX_Async):
-                    return AsyncRoute(method, endpoint, self.handler, params=params, **opts)
+                    return AsyncRoute(method, endpoint, self.handler, **overrides)
                 
                 raise AttributeError("Invalid Handler type, must be `HTTPX_Sync` or `HTTPX_Async`")
                 
