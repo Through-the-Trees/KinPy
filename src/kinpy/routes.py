@@ -55,24 +55,27 @@ class SyncRoute(Route):
         >>> routes = [SyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
         >>> responses = [route() for route in routes] # Run requests synchronously
     """
-    def __call__(self) -> Response:
+    def __call__(self, **call_options) -> Response:
+        route_options = self.route_options.copy()
+        call_options = route_options.update(call_options)
+            
         if not isinstance(self.handler, HTTPX_Sync):
             raise AttributeError("Sync Routing requires a Sync Handler")
         
         if self.method == 'GET':
-            return self.handler.get(self.url, **self.opts)
+            return self.handler.get(self.url, **call_options)
         
         elif self.method == 'POST':
-            return self.handler.post(self.url, **self.opts)
+            return self.handler.post(self.url, **call_options)
         
         elif self.method == 'PATCH':
-            return self.handler.patch(self.url, **self.opts)
+            return self.handler.patch(self.url, **call_options)
         
         elif self.method == 'PUT':
-            return self.handler.put(self.url, **self.opts)
+            return self.handler.put(self.url, **call_options)
         
         elif self.method == 'DELETE':
-            return self.handler.delete(self.url, **self.opts)   
+            return self.handler.delete(self.url, **call_options)
         return None
 
 class AsyncRoute(Route):
@@ -98,24 +101,27 @@ class AsyncRoute(Route):
         >>> routes = [AsyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
         >>> responses = [await route() for route in routes] # Run requests concurrently
     """
-    async def __call__(self) -> Coroutine[Any, Any, Response]:
+    async def __call__(self, **call_options) -> Coroutine[Any, Any, Response]:
+        route_options = self.route_options.copy()
+        call_options = route_options.update(call_options)
+        
         if not isinstance(self.handler, HTTPX_Async):
             raise AttributeError("Async Routing requires an Async Handler")
         
         if self.method == 'GET':
-            return await self.handler.get(self.url, **self.opts)
+            return await self.handler.get(self.url, **call_options)
         
         elif self.method == 'POST':
-            return await self.handler.post(self.url, **self.opts)
+            return await self.handler.post(self.url, **call_options)
         
         elif self.method == 'PATCH':
-            return await self.handler.patch(self.url, **self.opts)
+            return await self.handler.patch(self.url, **call_options)
         
         elif self.method == 'PUT':
-            return await self.handler.put(self.url, **self.opts)
+            return await self.handler.put(self.url, **call_options)
         
         elif self.method == 'DELETE':
-            return await self.handler.delete(self.url, **self.opts)   
+            return await self.handler.delete(self.url, **call_options)   
         return None
 
 class Routes:
