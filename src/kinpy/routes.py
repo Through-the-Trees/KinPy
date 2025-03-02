@@ -8,8 +8,6 @@ from typing import (
 from functools import wraps
 from httpx import Response
 
-import json
-
 from handlers import HTTPX_Async, HTTPX_Sync
 from utils import QueryString
 
@@ -20,7 +18,7 @@ class Route:
         self.handler = handler
         self.method = method
         self.endpoint = endpoint 
-        self.opts = opts
+        self.route_options = opts
      
     @property
     def url(self):
@@ -55,24 +53,27 @@ class SyncRoute(Route):
         >>> routes = [SyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
         >>> responses = [route() for route in routes] # Run requests synchronously
     """
-    def __call__(self) -> Response:
+    def __call__(self, **call_options) -> Response:
+        route_options = self.route_options.copy()
+        call_options = route_options.update(call_options)
+            
         if not isinstance(self.handler, HTTPX_Sync):
             raise AttributeError("Sync Routing requires a Sync Handler")
         
         if self.method == 'GET':
-            return self.handler.get(self.url, **self.opts)
+            return self.handler.get(self.url, **call_options)
         
         elif self.method == 'POST':
-            return self.handler.post(self.url, **self.opts)
+            return self.handler.post(self.url, **call_options)
         
         elif self.method == 'PATCH':
-            return self.handler.patch(self.url, **self.opts)
+            return self.handler.patch(self.url, **call_options)
         
         elif self.method == 'PUT':
-            return self.handler.put(self.url, **self.opts)
+            return self.handler.put(self.url, **call_options)
         
         elif self.method == 'DELETE':
-            return self.handler.delete(self.url, **self.opts)   
+            return self.handler.delete(self.url, **call_options)
         return None
 
 class AsyncRoute(Route):
@@ -98,24 +99,27 @@ class AsyncRoute(Route):
         >>> routes = [AsyncRoute('GET', '/k/v1/app.json', handler, params={'id': i}) for i in range(1, 11)]
         >>> responses = [await route() for route in routes] # Run requests concurrently
     """
-    async def __call__(self) -> Coroutine[Any, Any, Response]:
+    async def __call__(self, **call_options) -> Coroutine[Any, Any, Response]:
+        route_options = self.route_options.copy()
+        call_options = route_options.update(call_options)
+        
         if not isinstance(self.handler, HTTPX_Async):
             raise AttributeError("Async Routing requires an Async Handler")
         
         if self.method == 'GET':
-            return await self.handler.get(self.url, **self.opts)
+            return await self.handler.get(self.url, **call_options)
         
         elif self.method == 'POST':
-            return await self.handler.post(self.url, **self.opts)
+            return await self.handler.post(self.url, **call_options)
         
         elif self.method == 'PATCH':
-            return await self.handler.patch(self.url, **self.opts)
+            return await self.handler.patch(self.url, **call_options)
         
         elif self.method == 'PUT':
-            return await self.handler.put(self.url, **self.opts)
+            return await self.handler.put(self.url, **call_options)
         
         elif self.method == 'DELETE':
-            return await self.handler.delete(self.url, **self.opts)   
+            return await self.handler.delete(self.url, **call_options)   
         return None
 
 class Routes:
@@ -145,8 +149,8 @@ class Routes:
     def register_route(method: Route.RequestType, endpoint: str, *,
                        required: list[str] = None, 
                        optional: list[str] = None,
-                       json_content: bool = False,
-                       **opts) -> Route:
+                       json_request: bool = False,
+                       **overrides) -> Route:
         """Define a route using a function header and type hints
         
         Args:
@@ -154,7 +158,8 @@ class Routes:
             endpoint: The api endpoint minus the base url of the handler
             required: Required parameter keys
             optional: Optional parameter keys
-            opts: Optional parameters to pass to the Handler request method
+            json_request: If True, send the request parameters as a JSON body, rather than query string
+            **overrides: Optional parameters to pass to the Handler request method
         
         Raises:
             ValueError: If required parameters are not passed
@@ -232,14 +237,16 @@ class Routes:
                             f"Expected {param} to be of type {_wrapped.__annotations__[param]}"
                             )
                 
-                # TODO: Come up with a more elegant solution here; get requests to not accept a json body, but some put requests require it.
-                if isinstance(self.handler, HTTPX_Sync) and json_content:
-                    return SyncRoute(method, endpoint, self.handler, json=params, **opts)
-                elif isinstance(self.handler, HTTPX_Sync):
-                    return SyncRoute(method, endpoint, self.handler, params=params, **opts)
+                if json_request:
+                    overrides['json'] = params
+                else:
+                    overrides['params'] = params
+                    
+                if isinstance(self.handler, HTTPX_Sync) and json_request:
+                    return SyncRoute(method, endpoint, self.handler, **overrides)
                 
                 if isinstance(self.handler, HTTPX_Async):
-                    return AsyncRoute(method, endpoint, self.handler, params=params, **opts)
+                    return AsyncRoute(method, endpoint, self.handler, **overrides)
                 
                 raise AttributeError("Invalid Handler type, must be `HTTPX_Sync` or `HTTPX_Async`")
                 
@@ -319,7 +326,7 @@ class Routes:
         """
         ...
 
-    @register_route('PUT', '/k/v1/record.json', required=[], optional=['app', 'record', 'id', 'updateKey', 'revision'], json_content=True)
+    @register_route('PUT', '/k/v1/record.json', required=[], optional=['app', 'record', 'id', 'updateKey', 'revision'], json_request=True)
     def update_record(self, app: str | int, record: dict, id: str | int, updateKey, revision) -> Route:
         """Updates specified record within app database
         Args:
