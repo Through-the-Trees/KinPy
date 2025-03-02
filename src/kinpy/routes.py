@@ -8,8 +8,6 @@ from typing import (
 from functools import wraps
 from httpx import Response
 
-import json
-
 from handlers import HTTPX_Async, HTTPX_Sync
 from utils import QueryString
 
