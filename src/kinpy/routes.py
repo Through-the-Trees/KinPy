@@ -20,7 +20,7 @@ class Route:
         self.handler = handler
         self.method = method
         self.endpoint = endpoint 
-        self.opts = opts
+        self.route_options = opts
      
     @property
     def url(self):
