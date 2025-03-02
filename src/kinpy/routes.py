@@ -151,8 +151,8 @@ class Routes:
     def register_route(method: Route.RequestType, endpoint: str, *,
                        required: list[str] = None, 
                        optional: list[str] = None,
-                       json_content: bool = False,
-                       **opts) -> Route:
+                       json_request: bool = False,
+                       **overrides) -> Route:
         """Define a route using a function header and type hints
         
         Args:
@@ -160,7 +160,8 @@ class Routes:
             endpoint: The api endpoint minus the base url of the handler
             required: Required parameter keys
             optional: Optional parameter keys
-            opts: Optional parameters to pass to the Handler request method
+            json_request: If True, send the request parameters as a JSON body, rather than query string
+            **overrides: Optional parameters to pass to the Handler request method
         
         Raises:
             ValueError: If required parameters are not passed
