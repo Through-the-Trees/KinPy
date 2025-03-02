@@ -328,7 +328,7 @@ class Routes:
         """
         ...
 
-    @register_route('PUT', '/k/v1/record.json', required=[], optional=['app', 'record', 'id', 'updateKey', 'revision'], json_content=True)
+    @register_route('PUT', '/k/v1/record.json', required=[], optional=['app', 'record', 'id', 'updateKey', 'revision'], json_request=True)
     def update_record(self, app: str | int, record: dict, id: str | int, updateKey, revision) -> Route:
         """Updates specified record within app database
         Args:
