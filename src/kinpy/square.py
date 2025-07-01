@@ -1,12 +1,32 @@
+from typing import Any
+
 import httpx
 
-import datetime
 from datetime import datetime as dt, timezone, timedelta
 
 import re
 from collections import Counter
 
 from key import DEVICE_AUTH, SQUARE_KEY
+
+est_timezone = timezone(timedelta(hours=-5))
+def dt_readable(datetime_obj: dt) -> str:
+    datetime_obj = datetime_obj.astimezone(est_timezone)
+    return f'{datetime_obj.strftime("%B")} {datetime_obj.day}, {datetime_obj.year} @ {datetime_obj.hour%12}:{datetime_obj.minute}'
+
+def kintone_date(datetime_obj: dt) -> str:
+    return f'{datetime_obj.year}-{ str(datetime_obj.month).zfill(2) }-{ str(datetime_obj.day).zfill(2) }'
+
+# Prompt user for date
+# start_date: list[str] = [int(string) for string in input("Please enter start date in format MM-DD-YYYY:").split("-")]
+# end_date: str = input("Please enter end date in format MM-DD-YYYY (Press enter for single day):")
+# end_date: list[str] = start_date if not end_date else [int(string) for string in end_date.split('-')]
+
+# Override
+start_date: list[str] = [int(string) for string in "06-20-2025".split("-")]
+end_date: list[str] = [int(string) for string in "06-20-2025".split("-")]
+start_dt: dt = dt(year=start_date[2], month=start_date[0], day=start_date[1], hour=0, minute=0, second=0, tzinfo=est_timezone)
+end_dt: dt = dt(year=end_date[2], month=end_date[0], day=end_date[1], hour=23, minute=59, second=59, tzinfo=est_timezone)
 
 headers = {
     "Square-Version": "2025-05-21",
@@ -21,28 +41,18 @@ body = {
         "filter": {
             "date_time_filter": {
                 "created_at": {
-                "start_at": "2020-01-01T00:00:00Z",
-                "end_at": "2025-06-28T23:59:59Z"
+                "start_at": f"{start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")}",
+                "end_at": f"{end_dt.strftime("%Y-%m-%dT%H:%M:%SZ")}"
                 }
             }
         }
     }
 }
 
-
-est_timezone = timezone(timedelta(hours=-5))
-def dt_readable(datetime_obj: dt) -> str:
-    datetime_obj = datetime_obj.astimezone(est_timezone)
-    return f'{datetime_obj.strftime("%B")} {datetime_obj.day}, {datetime_obj.year} @ {datetime_obj.hour%12}:{datetime_obj.minute}'
-
-def kintone_date(datetime_obj: dt) -> str:
-    return f'{datetime_obj.year}-{ str(datetime_obj.month).zfill(2) }-{ str(datetime_obj.day).zfill(2) }'
-
-all_notes: str = ''
 sales_by_date: dict[str, list] = {}
 date_by_sales: dict[str, str] = {}
-earliest_datetime = dt.now(datetime.timezone.utc)
-latest_datetime = dt.min.replace(tzinfo=datetime.timezone.utc)
+
+sold_items: list[ dict[str, Any] ] = []
 
 cursor = None
 more_items: bool = True
@@ -54,14 +64,13 @@ while more_items:
     else:
         more_items = False
     print(cursor)
+    if 'orders' not in response:
+        break
     orders: list[dict] = response['orders']
 
     for order in orders:
+
         created_datetime: dt = dt.fromisoformat(order['created_at'])
-        if created_datetime < earliest_datetime:
-            earliest_datetime = created_datetime
-        if created_datetime > latest_datetime:
-            latest_datetime = created_datetime
 
         if 'line_items' not in order:
             continue
@@ -72,26 +81,20 @@ while more_items:
                 continue
             sold_assets = re.findall(r"\d{4}", item['note'])
             for sold_asset in sold_assets:
+                sold_item = {
+                    'asset_tag': sold_asset,
+                    'created_at': order['created_at'],
+                    'name': item['name'],
+                    'full_note': item['note'] # REMOVE
+                }
+                sold_items.append(sold_item)
                 if sold_asset not in date_by_sales or (sold_asset in date_by_sales and date_by_sales[sold_asset] < created_datetime):
                     date_by_sales[sold_asset] = created_datetime
             sales_by_date[kintone_date(created_datetime)].extend(sold_assets)
-            all_notes += item['note'] + '~'
-
-print( dt_readable(earliest_datetime) )
-print( dt_readable(latest_datetime) )
-all_sold_assets = re.findall(r"\d{4}", all_notes)
-duplicates = [[item, count] for item, count in Counter(all_sold_assets).items() if count > 1]
+            
 unique_sold_assets = [k for k in date_by_sales.keys()]
-# print(f'{len(duplicates)} items sold multiple times: {duplicates}')
-# print(f'{len(date_by_sales.keys())=}')
-# print(f'{len(all_sold_assets)=}')
-# Ignore items returned and sold multiple times / record duplicates
-# unique_sold_assets = [asset for asset, _ in Counter(all_sold_assets).items()]
-# print(f'{len(unique_sold_assets)=}')
 
-# for sold_dt, assets in sales_by_date.items():
-#     if assets:
-#         print(f'Items sold on {sold_dt}:\n{assets}')
+print(sold_items)
 
 from interfaces import KintonePortal, KTApp, QueryString
 
@@ -127,14 +130,12 @@ for record in records:
         date_mismatches.append(f'Asset {record[ASSET_TAG]} | Record: {record_date} | Sale: { kintone_date(date_by_sales[record[ASSET_TAG]]) }')
 
 for k, v in record_errors.items():
-    print(f'{len(v)} records marked as {k}: {v}')
+    print(f'{len(v)} records erroneously marked as {k}: {v}')
 
 found_assets: list[str] = [record[ASSET_TAG] for record in records]
-missing_assets: list[str] = [asset for asset in all_sold_assets if asset not in found_assets]
+missing_assets: list[str] = [asset for asset in unique_sold_assets if asset not in found_assets]
 print(f'{len(missing_assets)} missing records: {missing_assets}')
 
-print(f'{len(date_mismatches)=}')
-
-# print(f'{correct_date} records with correct date input\n{incorreect_date} incorrect dates')
-# for string in date_mismatches:
-#     print(string)
+print(f'{correct_date} records with correct date input\n{incorreect_date} incorrect dates:')
+for string in date_mismatches:
+    print(string)
