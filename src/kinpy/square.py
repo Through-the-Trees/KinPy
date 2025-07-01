@@ -81,11 +81,13 @@ print( dt_readable(earliest_datetime) )
 print( dt_readable(latest_datetime) )
 all_sold_assets = re.findall(r"\d{4}", all_notes)
 duplicates = [[item, count] for item, count in Counter(all_sold_assets).items() if count > 1]
-print(f'{len(duplicates)} items sold multiple times: {duplicates}')
-print(f'{len(date_by_sales.keys())=}')
-print(f'{len(all_sold_assets)=}')
+unique_sold_assets = [k for k in date_by_sales.keys()]
+# print(f'{len(duplicates)} items sold multiple times: {duplicates}')
+# print(f'{len(date_by_sales.keys())=}')
+# print(f'{len(all_sold_assets)=}')
 # Ignore items returned and sold multiple times / record duplicates
-unique_sold_assets = [asset for asset, _ in Counter(all_sold_assets).items()]
+# unique_sold_assets = [asset for asset, _ in Counter(all_sold_assets).items()]
+# print(f'{len(unique_sold_assets)=}')
 
 # for sold_dt, assets in sales_by_date.items():
 #     if assets:
