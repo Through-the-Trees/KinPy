@@ -299,8 +299,8 @@ class Routes:
         """
         ...
 
-    @register_route('POST', '/k/v1/record.json', required=['app', 'record'])
-    def add_record(self, app: int | str, record: str) -> Route:
+    @register_route('POST', '/k/v1/record.json', required=['app', 'record'], json_content=True)
+    def add_record(self, app: int | str, record: dict) -> Route:
         """Creates a new record within specified app
         
         Args:

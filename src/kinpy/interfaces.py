@@ -172,3 +172,17 @@ class KTApp:
 
         return response
 
+    def add_record(self, record: dict[str, Any]):
+        """Create new record"""
+
+        # Re-structure record in API-friendly format
+        record: dict[str, dict[str, Any] ] = \
+        {
+            k: {'value': v}
+            for k, v in record.items() if k != '$id'
+        }
+
+        route = self._portal.routes.add_record(app=self.app_id, record=record)
+        response: dict = json.loads(route().content)
+
+        return response
