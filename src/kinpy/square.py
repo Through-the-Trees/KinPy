@@ -12,16 +12,14 @@ from interfaces import KintonePortal, KTApp, QueryString
 httpx.get("https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706")
 
 # Specefy custom dates
-# start_date: list[str] = [int(string) for string in "07-01-2025".split("-")]
-# end_date: list[str] = [int(string) for string in "07-08-2025".split("-")]
 EST_TIMEZONE = timezone(timedelta(hours=-5))
 now_est: dt = dt.now(tz=EST_TIMEZONE)
 start_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
 end_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 # Specefy custom date range (override):
-start_dt: dt = dt(year=2025, month=7, day=1, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
-end_dt: dt = dt(year=2025, month=7, day=8, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
+# start_dt: dt = dt(year=2025, month=7, day=1, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
+# end_dt: dt = dt(year=2025, month=7, day=8, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 LOG_FILE = 'square.log'
 
@@ -160,9 +158,12 @@ for asset, sales_record in missing_records.items():
         PRICE: int(sales_record['price'])
     }
 
-    # devices_app.add_record(new_record)
+    devices_app.add_record(new_record)
 
+# Status: list of records
 record_status_errors: dict[str, list[str]] = {}
+# Asset tag: 'recorded date -> correct date'
+record_date_errors: dict[str, str] = {}
 record_location_errors: list[str] = []
 record_price_errors: list[str] = []
 for record in records:
@@ -182,7 +183,7 @@ for record in records:
         record[LOCATION] = "Out"
         update_record = True
     
-    if record[PRICE] != sales_record['price']:
+    if int(record[PRICE]) != int(sales_record['price']):
         record_price_errors.append(record_asset_tag)
         record[PRICE] = sales_record['price']
         update_record = True
@@ -191,15 +192,19 @@ for record in records:
     if record[DISTRIBUTION_DATE] == kintone_date(sales_record['created_datetime']):
         pass
     else:
-        print(f'{record[DISTRIBUTION_DATE]} does not match {kintone_date(sales_record['created_datetime'])}!')
-        record[DISTRIBUTION_DATE] = kintone_date(sales_record['created_datetime'])
+        sales_date_formatted = kintone_date(sales_record['created_datetime'])
+        record_date_errors[record_asset_tag] = f'{record[DISTRIBUTION_DATE]} -> {sales_date_formatted}'
+        record[DISTRIBUTION_DATE] = sales_date_formatted
         update_record = True
     
-    # if update_record:
-    #     devices_app.update_record(record)
+    if update_record:
+        devices_app.update_record(record)
 
 for status, record_list in record_status_errors.items():
     logger.warning(f'Status updated from "{status}" to "Sold" for Records: {record_list}')
+
+for asset, update_note in record_date_errors.items():
+    logger.warning(f'Record {asset} sales date input\n{update_note}')
 
 if record_location_errors:
     logger.warning(f'Location change to "Out" for records: {record_location_errors}')
