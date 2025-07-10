@@ -1,3 +1,52 @@
 07-08-25 19:39 httpx        INFO     HTTP Request: POST https://connect.squareup.com/v2/orders/search "HTTP/1.1 200 OK"
 07-08-25 19:39 __main__     INFO     0 unique items sold between July 8, 2025 at 0:0 and July 8, 2025 at 11:59
 07-08-25 19:39 __main__     INFO     0 corresponding records found in Kintone
+07-10-25 16:31 httpx        INFO     HTTP Request: POST https://connect.squareup.com/v2/orders/search "HTTP/1.1 200 OK"
+07-10-25 16:31 httpx        INFO     HTTP Request: GET https://throughthetrees.kintone.com/k/v1/records.json?app=4&fields=Text%2CDrop_down_2%2CDrop_down_4%2CDrop_down%2CDate_distribution%2CNumber_0%2C%24id&query=Text+in+%285300%2C+6162%29+order+by+%24id+asc+limit+500&totalCount=true "HTTP/1.1 200 OK"
+07-10-25 16:31 __main__     INFO     2 unique items sold between July 10, 2025 at 0:0 and July 10, 2025 at 11:59
+07-10-25 16:31 __main__     INFO     2 corresponding records found in Kintone
+07-10-25 16:33 httpx        INFO     HTTP Request: POST https://connect.squareup.com/v2/orders/search "HTTP/1.1 200 OK"
+07-10-25 16:33 httpx        INFO     HTTP Request: GET https://throughthetrees.kintone.com/k/v1/records.json?app=4&fields=Text%2CDrop_down_2%2CDrop_down_4%2CDrop_down%2CDate_distribution%2CNumber_0%2C%24id&query=Text+in+%285300%2C+6162%29+order+by+%24id+asc+limit+500&totalCount=true "HTTP/1.1 200 OK"
+07-10-25 16:33 __main__     INFO     2 unique items sold between July 10, 2025 at 0:0 and July 10, 2025 at 11:59
+07-10-25 16:33 __main__     INFO     2 corresponding records found in Kintone
+07-10-25 16:33 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:33 __main__     WARNING  Status updated from "Needs Cleaning" to "Sold" for Records: ['6162']
+07-10-25 16:33 __main__     WARNING  Record 6162 sales date input
+None -> 2025-07-10
+07-10-25 16:33 __main__     WARNING  Location change to "Out" for records: ['6162']
+07-10-25 16:33 __main__     WARNING  Price updated to match sales for records: ['6162']
+07-10-25 16:33 __main__     INFO     ---- Script completed without failure ----
+07-10-25 16:33 httpx        INFO     HTTP Request: GET https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706 "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: POST https://connect.squareup.com/v2/orders/search "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: GET https://throughthetrees.kintone.com/k/v1/records.json?app=4&fields=Text%2CDrop_down_2%2CDrop_down_4%2CDrop_down%2CDate_distribution%2CNumber_0%2C%24id&query=Text+in+%285598%2C+5578%2C+1809%2C+5570%2C+5588%2C+6049%29+order+by+%24id+asc+limit+500&totalCount=true "HTTP/1.1 200 OK"
+07-10-25 16:44 __main__     INFO     6 unique items sold between July 9, 2025 at 0:0 and July 9, 2025 at 11:59
+07-10-25 16:44 __main__     INFO     6 corresponding records found in Kintone
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 httpx        INFO     HTTP Request: PUT https://throughthetrees.kintone.com/k/v1/record.json "HTTP/1.1 200 OK"
+07-10-25 16:44 __main__     WARNING  Status updated from "Ready to Distribute" to "Sold" for Records: ['1809', '5570', '6049', '5578', '5588', '5598']
+07-10-25 16:44 __main__     WARNING  Record 1809 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Record 5570 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Record 6049 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Record 5578 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Record 5588 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Record 5598 sales date input
+None -> 2025-07-09
+07-10-25 16:44 __main__     WARNING  Location change to "Out" for records: ['1809', '5570', '6049', '5578', '5588', '5598']
+07-10-25 16:44 __main__     WARNING  Price updated to match sales for records: ['6049']
+07-10-25 16:44 __main__     INFO     ---- Script completed without failure ----
+07-10-25 16:44 httpx        INFO     HTTP Request: GET https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706 "HTTP/1.1 200 OK"
+07-10-25 16:54 httpx        INFO     HTTP Request: POST https://connect.squareup.com/v2/orders/search "HTTP/1.1 200 OK"
+07-10-25 16:54 httpx        INFO     HTTP Request: GET https://throughthetrees.kintone.com/k/v1/records.json?app=4&fields=Text%2CDrop_down_2%2CDrop_down_4%2CDrop_down%2CDate_distribution%2CNumber_0%2C%24id&query=Text+in+%285598%2C+5578%2C+1809%2C+5570%2C+5588%2C+6049%29+order+by+%24id+asc+limit+500&totalCount=true "HTTP/1.1 200 OK"
+07-10-25 16:54 __main__     INFO     6 unique items sold between July 9, 2025 at 0:0 and July 9, 2025 at 11:59
+07-10-25 16:54 __main__     INFO     6 corresponding records found in Kintone
+07-10-25 16:54 __main__     INFO     ---- Script completed without failure ----
+07-10-25 16:54 httpx        INFO     HTTP Request: GET https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706 "HTTP/1.1 200 OK"
