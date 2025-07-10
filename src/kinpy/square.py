@@ -8,9 +8,6 @@ import httpx
 from key import DEVICE_AUTH, SQUARE_KEY
 from interfaces import KintonePortal, KTApp, QueryString
 
-# Ping healthchecks.io
-httpx.get("https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706")
-
 # Specefy custom dates
 EST_TIMEZONE = timezone(timedelta(hours=-5))
 now_est: dt = dt.now(tz=EST_TIMEZONE)
@@ -18,8 +15,8 @@ start_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=
 end_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 # Specefy custom date range (override):
-# start_dt: dt = dt(year=2025, month=7, day=1, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
-# end_dt: dt = dt(year=2025, month=7, day=8, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
+# start_dt: dt = dt(year=2025, month=7, day=9, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
+# end_dt: dt = dt(year=2025, month=7, day=9, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 LOG_FILE = 'square.log'
 
@@ -51,8 +48,8 @@ body = {
         "filter": {
             "date_time_filter": {
                 "created_at": {
-                "start_at": f"{start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")}",
-                "end_at": f"{end_dt.strftime("%Y-%m-%dT%H:%M:%SZ")}"
+                "start_at": f"{start_dt.strftime('%Y-%m-%dT%H:%M:%SZ')}",
+                "end_at": f"{end_dt.strftime('%Y-%m-%dT%H:%M:%SZ')}"
                 }
             }
         }
@@ -183,7 +180,7 @@ for record in records:
         record[LOCATION] = "Out"
         update_record = True
     
-    if int(record[PRICE]) != int(sales_record['price']):
+    if not record[PRICE] or int(record[PRICE]) != int(sales_record['price']):
         record_price_errors.append(record_asset_tag)
         record[PRICE] = sales_record['price']
         update_record = True
@@ -204,9 +201,14 @@ for status, record_list in record_status_errors.items():
     logger.warning(f'Status updated from "{status}" to "Sold" for Records: {record_list}')
 
 for asset, update_note in record_date_errors.items():
-    logger.warning(f'Record {asset} sales date input\n{update_note}')
+    logger.warning(f'Record {asset} sales date input: {update_note}')
 
 if record_location_errors:
     logger.warning(f'Location change to "Out" for records: {record_location_errors}')
 if record_price_errors:
     logger.warning(f'Price updated to match sales for records: {record_price_errors}')
+
+logger.info("---- Script completed without failure ----")
+
+# Ping healthchecks.io
+httpx.get("https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706")
