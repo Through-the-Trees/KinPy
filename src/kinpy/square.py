@@ -48,8 +48,8 @@ body = {
         "filter": {
             "date_time_filter": {
                 "created_at": {
-                "start_at": f"{start_dt.strftime('%Y-%m-%dT%H:%M:%SZ')}",
-                "end_at": f"{end_dt.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+                "start_at": f"{start_dt.strftime('%Y-%m-%dT%H:%M:%S')}Z",
+                "end_at": f"{end_dt.strftime('%Y-%m-%dT%H:%M:%S')}Z"
                 }
             }
         }
