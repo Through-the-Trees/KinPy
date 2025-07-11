@@ -15,8 +15,8 @@ start_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=
 end_dt: dt = dt(year=now_est.year, month=now_est.month, day=now_est.day, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 # Specefy custom date range (override):
-# start_dt: dt = dt(year=2025, month=7, day=9, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
-# end_dt: dt = dt(year=2025, month=7, day=9, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
+start_dt: dt = dt(year=2025, month=7, day=8, hour=0, minute=0, second=0, tzinfo=EST_TIMEZONE)
+end_dt: dt = dt(year=2025, month=7, day=10, hour=23, minute=59, second=59, tzinfo=EST_TIMEZONE)
 
 LOG_FILE = 'square.log'
 
@@ -208,7 +208,8 @@ if record_location_errors:
 if record_price_errors:
     logger.warning(f'Price updated to match sales for records: {record_price_errors}')
 
-logger.info("---- Script completed without failure ----")
 
 # Ping healthchecks.io
 httpx.get("https://hc-ping.com/42570a12-f6f9-478d-8aa0-eb423bb1c706")
+
+logger.info("---- Script completed without failure ----")
