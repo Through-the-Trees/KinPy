@@ -186,3 +186,13 @@ class KTApp:
         response: dict = json.loads(route().content)
 
         return response
+    
+    def get_form_fields(self) -> dict[str, Any]:
+        """Gets the list of fields and field settings of an App."""
+        route = self._portal.routes.get_form_fields(app=self.app_id)
+        response: dict = json.loads(route().content)
+
+        if 'properties' not in response:
+            return None
+
+        return response

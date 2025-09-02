@@ -339,6 +339,13 @@ class Routes:
             User can specify updateKey to update a single field (field name and value)
         """
         ...
+
+    @register_route('GET', '/k/v1/app/form/fields.json', required=['app'], json_content=False)
+    def get_form_fields(self, app: str | int) -> Route:
+        """
+        Gets the list of fields and field settings of an App.
+        """
+        ...
     
 
     # TODO: Implement all routes from here: https://kintone.dev/en/docs/kintone/rest-api/
