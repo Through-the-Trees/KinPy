@@ -19,9 +19,9 @@ import json
 
 from httpx import Client as HTTPX_Client
 
-from routes import Routes
-from handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
-from utils import QueryString
+from .routes import Routes
+from .handlers import HTTPX_Async, HTTPX_Sync, KintoneAuth
+from .utils import QueryString
 
 # TODO: Return type of a container property (e.g. .get_apps()) should be a bespoke container class
 # That implements nice indexing and "select_by" methods. For reference see C# LINQ
