@@ -10,8 +10,8 @@ from httpx import Response
 
 import json
 
-from handlers import HTTPX_Async, HTTPX_Sync
-from utils import QueryString
+from .handlers import HTTPX_Async, HTTPX_Sync
+from .utils import QueryString
 
 class Route:
     RequestType = Literal['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
